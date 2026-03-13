@@ -1,0 +1,179 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: black;
+    font-family: "Segoe UI", Arial;
+    display: flex;
+    justify-content: center;
+    color: white;
+}
+
+/* mobile frame */
+
+.overlay {
+    width: 100%;
+    max-width: 420px;
+    min-height: 100vh;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: end;
+    position: relative;
+}
+
+/* top navigation */
+.nav {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 12px;
+    border-radius: 10px;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.previous {
+    bottom: 15px;
+    left: 15px;
+}
+
+.menu {
+    top: 15px;
+}
+
+.next {
+    bottom: 15px;
+    right: 15px;
+}
+
+
+/* title */
+
+h1 {
+    font-size: 26px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* description */
+
+.text {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    line-height: 1.6;
+}
+
+/* buttons */
+
+.buttons {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+/* listen */
+
+.listen,
+.restart {
+    background: linear-gradient(45deg, #ff9800, #ffb74d);
+    border: none;
+    padding: 14px 30px;
+    border-radius: 30px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.audio-controls-group {
+    display: inline-flex;
+    align-items: center;
+    border: 2px solid orange;
+    border-radius: 30px;
+    /* Slightly more rounded for mobile feel */
+    overflow: hidden;
+    background-color: orange;
+    /* Prevent text selection on long-press */
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.audio-controls-group button {
+    background: orange;
+    border: none;
+    padding: 18px 22px;
+    /* Optimized for touch */
+    cursor: pointer;
+    font-size: 1.4rem;
+    /* Slightly larger icons */
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Layout for the rest of your buttons */
+
+
+/* The animation definition */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* The class we will trigger with JS */
+.playing {
+    display: inline-block;
+    /* Required for transform/scale to work */
+    animation: pulse 1.5s ease-in-out infinite;
+    color: white;
+    /* Optional: makes it pop against the orange */
+}
+
+/* Optional: center the headphones better in the group */
+#headphones {
+    font-size: 1.1rem;
+    padding: 0 5px;
+    user-select: none;
+}
+
+#progressBar {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    outline: none;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+/* The "thumb" or handle of the slider */
+#progressBar::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #ff9800;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid white;
+}
