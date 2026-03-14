@@ -37,30 +37,70 @@
     background-repeat: no-repeat;
 }
 
-/* top navigation */
-.nav {
+
+#nav-bar {
+    /* Since buttons are now absolute, the nav-bar div just needs to 
+       be a container that doesn't interfere with clicks below it */
     position: absolute;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 8px 12px;
-    border-radius: 10px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    /* Let clicks pass through the container... */
+    z-index: 10;
+}
+
+.nav {
+    background: rgba(0, 0, 0, 0.6);
+    /* Darker for better contrast on images */
+    backdrop-filter: blur(5px);
+    /* Modern frosted-glass effect */
+    -webkit-backdrop-filter: blur(5px);
+    padding: 10px 16px;
+    border-radius: 20px;
     color: white;
+    font-size: 14px;
+    font-weight: 600;
     text-decoration: none;
     cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: background 0.2s ease;
+}
+
+.nav:active {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#nav-bar .nav {
+    pointer-events: auto;
+    /* ...but let the buttons themselves be clickable */
+}
+
+/* Bottom Navigation - Move Previous/Next to a "Toolbar" feel */
+.previous,
+.next {
+    position: absolute;
+    /* Relative to the .overlay */
+    bottom: calc(20px + env(safe-area-inset-bottom));
 }
 
 .previous {
-    bottom: 15px;
-    left: 15px;
-}
-
-.menu {
-    top: 15px;
-    left: 15px;
+    left: 20px;
 }
 
 .next {
-    bottom: 15px;
-    right: 15px;
+    right: 20px;
+    background: #ff9800;
+    /* Primary action color for 'Next' */
+    border: none;
+}
+
+/* Menu stays at the top */
+.menu {
+    position: absolute;
+    top: 15px;
+    left: 15px;
 }
 
 

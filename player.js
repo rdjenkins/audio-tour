@@ -27,7 +27,6 @@ class AudioTourPlayer extends HTMLElement {
     render() {
         this.shadowRoot.innerHTML = `
         <style>
-            /* We will link your external CSS so the Shadow DOM can see it */
             @import "./style.css";
         </style>
         <div class="overlay" id="main-container">
