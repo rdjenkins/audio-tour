@@ -121,93 +121,94 @@ class AudioTourPlayer extends HTMLElement {
             this.renderStop(0);
         } catch (error) {
             console.error("Error loading tour:", error);
-            this.shadowRoot.getElementById("desc").innerText = "Failed to load tour data.";
+            this.shadowRoot.getElementById("desc").innerText = "Sorry. No tour available.";
+            this.shadowRoot.querySelector(".buttons").style.display = "none";
         }
     }
 
-renderStop(index) {
-    if (!this.tourData) return;
-    
-    const s = this.shadowRoot;
-    const stop = this.tourData[index];
-    this.currentIndex = index;
+    renderStop(index) {
+        if (!this.tourData) return;
 
-    // 1. Handle the Menu Area (the dynamic buttons)
-    // First, find or create the menu container so we can clear it
-    let menuContainer = s.getElementById("menu-container");
-    
-    // If it doesn't exist yet (first run), create it
-    if (!menuContainer) {
-        menuContainer = document.createElement("div");
-        menuContainer.id = "menu-container";
-        // Insert it after the description text
-        s.getElementById("main-container").insertBefore(menuContainer, s.querySelector(".buttons"));
+        const s = this.shadowRoot;
+        const stop = this.tourData[index];
+        this.currentIndex = index;
+
+        // 1. Handle the Menu Area (the dynamic buttons)
+        // First, find or create the menu container so we can clear it
+        let menuContainer = s.getElementById("menu-container");
+
+        // If it doesn't exist yet (first run), create it
+        if (!menuContainer) {
+            menuContainer = document.createElement("div");
+            menuContainer.id = "menu-container";
+            // Insert it after the description text
+            s.getElementById("main-container").insertBefore(menuContainer, s.querySelector(".buttons"));
+        }
+
+        // Always clear the menu container at the start of every stop
+        menuContainer.innerHTML = "";
+
+        // If we are on the Home/Menu page (index 0), build the buttons
+        if (index === 0) {
+            const stops = this.tourData.slice(1).map((stopData, idx) => ({
+                title: stopData.title,
+                targetIndex: idx + 1
+            }));
+
+            stops.forEach(({ title, targetIndex }) => {
+                const btn = document.createElement("button");
+                btn.className = "menu-stop-btn";
+                btn.textContent = title;
+                // Use changeStop(0) logic via a direct render call for absolute navigation
+                btn.onclick = () => {
+                    this.resetAudioUI(); // Reset UI state before moving
+                    this.renderStop(targetIndex);
+                };
+                menuContainer.appendChild(btn);
+            });
+        }
+
+        // 2. Update Text Content
+        s.getElementById("title").innerText = stop.title;
+        s.getElementById("desc").innerText = stop.desc;
+
+        // 3. Update Background Image
+        const container = s.getElementById("main-container");
+        if (stop.image) {
+            container.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url(${stop.image})`;
+            container.style.backgroundSize = "cover";
+            container.style.backgroundPosition = "center";
+        } else {
+            container.style.backgroundImage = "none";
+        }
+
+        // 4. Handle Audio Controls Visibility
+        const controls = s.getElementById("audio-controls");
+        const progressBar = s.getElementById("progressBar");
+        const voice = s.getElementById("voice");
+
+        if (stop.audio) {
+            controls.style.display = "flex";
+            progressBar.style.display = "block";
+            voice.src = stop.audio;
+            voice.load(); // Force load the track
+        } else {
+            controls.style.display = "none";
+            progressBar.style.display = "none";
+            voice.pause();
+        }
+
+        // 5. Update Navigation Buttons
+        this.renderNav(index);
     }
 
-    // Always clear the menu container at the start of every stop
-    menuContainer.innerHTML = "";
-
-    // If we are on the Home/Menu page (index 0), build the buttons
-    if (index === 0) {
-        const stops = this.tourData.slice(1).map((stopData, idx) => ({
-            title: stopData.title,
-            targetIndex: idx + 1
-        }));
-
-        stops.forEach(({ title, targetIndex }) => {
-            const btn = document.createElement("button");
-            btn.className = "menu-stop-btn"; 
-            btn.textContent = title;
-            // Use changeStop(0) logic via a direct render call for absolute navigation
-            btn.onclick = () => {
-                this.resetAudioUI(); // Reset UI state before moving
-                this.renderStop(targetIndex);
-            };
-            menuContainer.appendChild(btn);
-        });
+    // Helper method to keep the code clean (you can add this to your class)
+    resetAudioUI() {
+        const s = this.shadowRoot;
+        s.getElementById("progressBar").value = 0;
+        s.getElementById("listenBtn").innerHTML = this.playIcon;
+        s.getElementById("headphones").classList.remove("playing");
     }
-
-    // 2. Update Text Content
-    s.getElementById("title").innerText = stop.title;
-    s.getElementById("desc").innerText = stop.desc;
-
-    // 3. Update Background Image
-    const container = s.getElementById("main-container");
-    if (stop.image) {
-        container.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url(${stop.image})`;
-        container.style.backgroundSize = "cover";
-        container.style.backgroundPosition = "center";
-    } else {
-        container.style.backgroundImage = "none";
-    }
-
-    // 4. Handle Audio Controls Visibility
-    const controls = s.getElementById("audio-controls");
-    const progressBar = s.getElementById("progressBar");
-    const voice = s.getElementById("voice");
-
-    if (stop.audio) {
-        controls.style.display = "flex";
-        progressBar.style.display = "block";
-        voice.src = stop.audio;
-        voice.load(); // Force load the track
-    } else {
-        controls.style.display = "none";
-        progressBar.style.display = "none";
-        voice.pause();
-    }
-
-    // 5. Update Navigation Buttons
-    this.renderNav(index);
-}
-
-// Helper method to keep the code clean (you can add this to your class)
-resetAudioUI() {
-    const s = this.shadowRoot;
-    s.getElementById("progressBar").value = 0;
-    s.getElementById("listenBtn").innerHTML = this.playIcon;
-    s.getElementById("headphones").classList.remove("playing");
-}
 
     renderNav(index) {
         const navBar = this.shadowRoot.getElementById("nav-bar");
