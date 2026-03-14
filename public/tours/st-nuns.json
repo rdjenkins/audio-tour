@@ -15,9 +15,30 @@
             "desc": "The entrance to St Nun's church is on Fore Street..."
         },
         {
-            "id": "place2",
+            "id": "vestibule",
+            "title": "Vestibule",
+            "image": "images/vestibule.jpg",
+            "audio": "audio/stnun2.mp3",
+            "desc": "You are now inside..."
+        },
+        {
+            "id": "pilkington",
+            "title": "Pilkington window",
+            "image": "images/pilkington-window.jpg",
+            "audio": "audio/stnun2.mp3",
+            "desc": "This is the Pilkington stained-glass window"
+        },
+        {
+            "id": "organ",
+            "title": "Organ",
+            "image": "images/organ.jpg",
+            "audio": "audio/stnun2.mp3",
+            "desc": "You are now looking at the organ ..."
+        },
+        {
+            "id": "altar",
             "title": "The Altar",
-            "image": "images/stnun2.jpg",
+            "image": "images/altar.jpg",
             "audio": "audio/stnun2.mp3",
             "desc": "You are now standing before the main altar..."
         }
