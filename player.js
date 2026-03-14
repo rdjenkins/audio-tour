@@ -176,6 +176,8 @@ renderStop(index) {
         container.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url(${stop.image})`;
         container.style.backgroundSize = "cover";
         container.style.backgroundPosition = "center";
+    } else {
+        container.style.backgroundImage = "none";
     }
 
     // 4. Handle Audio Controls Visibility
