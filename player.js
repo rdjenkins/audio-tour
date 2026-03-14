@@ -13,6 +13,7 @@ class AudioTourPlayer extends HTMLElement {
         this.playIcon = `<img src="/play.svg" height="24" width="24">`;
         this.pauseIcon = `<img src="/pause.svg" height="24" width="24">`;
         this.restartIcon = `<img src="/restart.svg" height="24" width="24">`;
+        this.headphonesIcon = `<img src="/headphones.svg" height="24" width="24">`;
     }
 
     connectedCallback() {
@@ -43,7 +44,7 @@ class AudioTourPlayer extends HTMLElement {
                     <button class="restart" id="restartBtn" title="Restart">
                         ${this.restartIcon}
                     </button>
-                    <span id="headphones">🎧</span>
+                    <span id="headphones">${this.headphonesIcon}</span>
                     <button class="listen" id="listenBtn" title="Play/Pause">
                         ${this.playIcon}
                     </button>
