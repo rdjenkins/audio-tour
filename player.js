@@ -163,9 +163,9 @@ class AudioTourPlayer extends HTMLElement {
         const isLast = index === this.tourData.length - 1;
 
         navBar.innerHTML = `
-            ${isFirst ? `<a class="nav next" id="nextBtn">Start ➡</a>` :
-                `<a class="nav previous" id="prevBtn">⬅ Back</a> <a class="nav menu" id="menuBtn">Menu</a>`}
-            ${!isLast && !isFirst ? `<a class="nav next" id="nextBtn">Next ➡</a>` : ''}
+            ${isFirst ? `<a class="nav next" id="nextBtn">Start</a>` :
+                `<a class="nav previous" id="prevBtn">Back</a> <a class="nav menu" id="menuBtn">Menu</a>`}
+            ${!isLast && !isFirst ? `<a class="nav next" id="nextBtn">Next</a>` : ''}
         `;
 
         // Scoped event listeners for the navigation
