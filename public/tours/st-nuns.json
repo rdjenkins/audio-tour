@@ -1,0 +1,25 @@
+{
+  "tourName": "St Nun's Church",
+  "stops": [
+    {
+        "id": "home",
+        "title": "St Nun's Church Tour",
+        "desc": "Welcome! Tap a stop below to begin.",
+        "image": "images/St-Nun.jpg"
+    },
+    {
+        "id": "place1",
+        "title": "Front",
+        "image": "images/stnun1.jpg",
+        "audio": "audio/stnun1.mp3",
+        "desc": "The entrance to St Nun's church is on Fore Street..."
+    },
+    {
+        "id": "place2",
+        "title": "The Altar",
+        "image": "images/stnun2.jpg",
+        "audio": "audio/stnun2.mp3",
+        "desc": "You are now standing before the main altar..."
+  }
+  ]
+}

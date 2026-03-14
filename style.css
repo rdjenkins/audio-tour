@@ -44,6 +44,7 @@ body {
 
 .menu {
     top: 15px;
+    left: 15px;
 }
 
 .next {
@@ -84,7 +85,7 @@ h1 {
 
 .listen,
 .restart {
-    background: linear-gradient(45deg, #ff9800, #ffb74d);
+    background: orange;
     border: none;
     padding: 14px 30px;
     border-radius: 30px;
@@ -93,7 +94,7 @@ h1 {
     cursor: pointer;
 }
 
-.audio-controls-group {
+.audio-controls {
     display: inline-flex;
     align-items: center;
     border: 2px solid orange;
