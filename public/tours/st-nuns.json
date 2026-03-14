@@ -4,7 +4,7 @@
         {
             "id": "home",
             "title": "St Nun's Church Tour",
-            "desc": "Welcome! Tap a stop below to begin. (Stops to follow at some point when coded. 😀)",
+            "desc": "Welcome! Tap a stop below or just click 'start' to go through the tour.",
             "image": "images/St-Nun.jpg"
         },
         {

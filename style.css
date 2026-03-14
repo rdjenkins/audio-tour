@@ -230,3 +230,37 @@ h1 {
     cursor: pointer;
     border: 2px solid white;
 }
+
+#menu-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row; /* Flow horizontally */
+    flex-wrap: wrap;    /* Wrap to next line if no room */
+    justify-content: center; /* Center the "cloud" */
+    gap: 8px;           /* Tighter gap for tag cloud feel */
+    margin-top: 20px;
+}
+
+.menu-stop-btn {
+    /* Remove width: 100% if it was there */
+    width: auto; 
+    
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    
+    /* Slimmer padding for a tag-like appearance */
+    padding: 8px 16px; 
+    border-radius: 20px; /* Pill shape looks better for tags */
+    
+    font-size: 14px;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    transition: all 0.2s ease;
+    white-space: nowrap; /* Prevent button text from breaking weirdly */
+}
+
+.menu-stop-btn:active {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0.95); /* Little haptic-style visual feedback */
+}
