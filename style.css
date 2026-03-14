@@ -15,15 +15,23 @@ body {
 /* mobile frame */
 
 .overlay {
-    width: 100%;
-    max-width: 420px;
+    /* Force the width to be stable */
+    width: 420px;
+    /* Instead of 100%, use a fixed width for the "frame" */
+
+    /* Responsive fallback: if screen is smaller than 420px, use 100% */
+    max-width: 100vw;
+
+    XXmax-width: 420px;
     min-height: 100vh;
     padding: 40px 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: end;
+    align-items: stretch;
+    justify-content: flex-end;
     position: relative;
+    /* Centers the frame on large screens */
+    margin: 0 auto;
 }
 
 /* top navigation */
@@ -64,6 +72,7 @@ h1 {
 /* description */
 
 .text {
+    width: 100%;
     background: rgba(255, 255, 255, 0.15);
     padding: 20px;
     border-radius: 15px;
@@ -158,7 +167,7 @@ h1 {
 #progressBar {
     -webkit-appearance: none;
     appearance: none;
-    width: 100%;
+    width: 50%;
     height: 8px;
     background: rgba(255, 255, 255, 0.3);
     border-radius: 5px;

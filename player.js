@@ -4,12 +4,12 @@ class AudioTourPlayer extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: "open" });
-        
+
         // State
         this.tourData = null;
         this.currentIndex = 0;
 
-        // Your specific SVG icons
+        // SVG icons
         this.playIcon = `<img src="/play.svg" height="24" width="24">`;
         this.pauseIcon = `<img src="/pause.svg" height="24" width="24">`;
         this.restartIcon = `<img src="/restart.svg" height="24" width="24">`;
@@ -17,7 +17,7 @@ class AudioTourPlayer extends HTMLElement {
 
     connectedCallback() {
         this.render();
-        
+
         // Handle URL parameters for tour selection
         const urlParams = new URLSearchParams(window.location.search);
         const tourId = urlParams.get('tour') || 'st-nuns';
@@ -77,6 +77,7 @@ class AudioTourPlayer extends HTMLElement {
         });
 
         restartBtn.addEventListener("click", () => {
+            if (voice.currentTime === 0) { return }
             voice.currentTime = 0;
             voice.play();
             listenBtn.innerHTML = this.pauseIcon;
@@ -104,7 +105,7 @@ class AudioTourPlayer extends HTMLElement {
             resetUI();
             progressBar.value = 0;
         };
-        
+
         voice.onpause = resetUI;
     }
 
@@ -112,7 +113,7 @@ class AudioTourPlayer extends HTMLElement {
         try {
             const response = await fetch(jsonPath);
             if (!response.ok) throw new Error("Tour not found");
-            
+
             const data = await response.json();
             this.tourData = data.stops;
             this.renderStop(0);
