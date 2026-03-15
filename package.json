@@ -16,7 +16,7 @@
   },
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build",
+    "build": "vite build && node prepare-site.js",
     "preview": "vite preview"
   },
   "devDependencies": {

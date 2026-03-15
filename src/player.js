@@ -10,10 +10,10 @@ class AudioTourPlayer extends HTMLElement {
         this.currentIndex = 0;
 
         // SVG icons
-        this.playIcon = `<img src="/play.svg" height="24" width="24">`;
-        this.pauseIcon = `<img src="/pause.svg" height="24" width="24">`;
-        this.restartIcon = `<img src="/restart.svg" height="24" width="24">`;
-        this.headphonesIcon = `<img src="/headphones.svg" height="24" width="24">`;
+        this.playIcon = `<img src="play.svg" height="24" width="24">`;
+        this.pauseIcon = `<img src="pause.svg" height="24" width="24">`;
+        this.restartIcon = `<img src="restart.svg" height="24" width="24">`;
+        this.headphonesIcon = `<img src="headphones.svg" height="24" width="24">`;
     }
 
     connectedCallback() {
