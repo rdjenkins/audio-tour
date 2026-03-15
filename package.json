@@ -1,25 +1,25 @@
 {
-  "name": "audio-tour",
+  "name": "@rdjenkins/audio-tour-player",
   "version": "1.0.0",
-  "description": "Branched from https://github.com/NP102456/audio-tour",
-  "main": "player.js",
- "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview --host"
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/audio-tour-player.umd.cjs",
+  "module": "./dist/audio-tour-player.js",
+  "exports": {
+    ".": {
+      "import": "./dist/audio-tour-player.js",
+      "require": "./dist/audio-tour-player.umd.cjs"
+    },
+    "./style.css": "./dist/style.css"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rdjenkins/audio-tour.git"
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/rdjenkins/audio-tour/issues"
-  },
-  "homepage": "https://github.com/rdjenkins/audio-tour#readme",
   "devDependencies": {
-    "vite": "^8.0.0"
+    "vite": "^6.0.0"
   }
 }

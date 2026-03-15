@@ -1,4 +1,4 @@
-import "./style.css";
+import playerStyles from "./style.css?inline";
 
 class AudioTourPlayer extends HTMLElement {
     constructor() {
@@ -28,7 +28,7 @@ class AudioTourPlayer extends HTMLElement {
     render() {
         this.shadowRoot.innerHTML = `
         <style>
-            @import "./style.css";
+            ${playerStyles}
         </style>
         <div class="overlay" id="main-container">
             <div id="nav-bar"></div>
@@ -109,6 +109,22 @@ class AudioTourPlayer extends HTMLElement {
         };
 
         voice.onpause = resetUI;
+
+        let touchStartX = 0;
+
+        s.getElementById("main-container").addEventListener("touchstart", e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        s.getElementById("main-container").addEventListener("touchend", e => {
+            let touchEndX = e.changedTouches[0].screenX;
+            let diff = touchStartX - touchEndX;
+
+            if (Math.abs(diff) > 50) { // threshold of 50px
+                if (diff > 0) this.changeStop(1);  // Swipe Left -> Next
+                else this.changeStop(-1);         // Swipe Right -> Prev
+            }
+        }, { passive: true });
     }
 
     async initTour(jsonPath) {
