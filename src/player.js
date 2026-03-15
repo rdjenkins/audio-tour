@@ -31,6 +31,9 @@ class AudioTourPlayer extends HTMLElement {
             ${playerStyles}
         </style>
         <div class="overlay" id="main-container">
+        <div id="hint-prev" class="swipe-hint hint-left">⬅</div>
+        <div id="hint-next" class="swipe-hint hint-right">➡</div>
+
             <div id="nav-bar"></div>
 
             <h1 id="title"></h1>
@@ -65,6 +68,9 @@ class AudioTourPlayer extends HTMLElement {
         const restartBtn = s.getElementById("restartBtn");
         const progressBar = s.getElementById("progressBar");
         const headphones = s.getElementById("headphones");
+        const container = s.getElementById("main-container");
+        const hintPrev = s.getElementById("hint-prev");
+        const hintNext = s.getElementById("hint-next");
 
         listenBtn.addEventListener("click", () => {
             if (voice.paused) {
@@ -112,19 +118,41 @@ class AudioTourPlayer extends HTMLElement {
 
         let touchStartX = 0;
 
-        s.getElementById("main-container").addEventListener("touchstart", e => {
+        container.addEventListener("touchstart", (e) => {
             touchStartX = e.changedTouches[0].screenX;
         }, { passive: true });
 
-        s.getElementById("main-container").addEventListener("touchend", e => {
-            let touchEndX = e.changedTouches[0].screenX;
-            let diff = touchStartX - touchEndX;
+        container.addEventListener("touchmove", (e) => {
+            const currentX = e.changedTouches[0].screenX;
+            const diff = touchStartX - currentX;
 
-            if (Math.abs(diff) > 50) { // threshold of 50px
-                if (diff > 0) this.changeStop(1);  // Swipe Left -> Next
-                else this.changeStop(-1);         // Swipe Right -> Prev
+            // Show hints based on swipe direction
+            if (diff > 30) { // Swiping Left (Next)
+                hintNext.classList.add("hint-visible");
+                hintPrev.classList.remove("hint-visible");
+            } else if (diff < -30) { // Swiping Right (Back)
+                hintPrev.classList.add("hint-visible");
+                hintNext.classList.remove("hint-visible");
+            } else {
+                hintNext.classList.remove("hint-visible");
+                hintPrev.classList.remove("hint-visible");
             }
         }, { passive: true });
+
+        container.addEventListener("touchend", (e) => {
+            const touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+
+            // Hide hints immediately
+            hintNext.classList.remove("hint-visible");
+            hintPrev.classList.remove("hint-visible");
+
+            if (Math.abs(diff) > 70) { // Slightly higher threshold for action
+                if (diff > 0) this.changeStop(1);
+                else this.changeStop(-1);
+            }
+        }, { passive: true });
+
     }
 
     async initTour(jsonPath) {

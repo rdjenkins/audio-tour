@@ -234,33 +234,72 @@ h1 {
 #menu-container {
     width: 100%;
     display: flex;
-    flex-direction: row; /* Flow horizontally */
-    flex-wrap: wrap;    /* Wrap to next line if no room */
-    justify-content: center; /* Center the "cloud" */
-    gap: 8px;           /* Tighter gap for tag cloud feel */
+    flex-direction: row;
+    /* Flow horizontally */
+    flex-wrap: wrap;
+    /* Wrap to next line if no room */
+    justify-content: center;
+    /* Center the "cloud" */
+    gap: 8px;
+    /* Tighter gap for tag cloud feel */
     margin-top: 20px;
 }
 
 .menu-stop-btn {
     /* Remove width: 100% if it was there */
-    width: auto; 
-    
+    width: auto;
+
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
-    
+
     /* Slimmer padding for a tag-like appearance */
-    padding: 8px 16px; 
-    border-radius: 20px; /* Pill shape looks better for tags */
-    
+    padding: 8px 16px;
+    border-radius: 20px;
+    /* Pill shape looks better for tags */
+
     font-size: 14px;
     cursor: pointer;
     backdrop-filter: blur(5px);
     transition: all 0.2s ease;
-    white-space: nowrap; /* Prevent button text from breaking weirdly */
+    white-space: nowrap;
+    /* Prevent button text from breaking weirdly */
 }
 
 .menu-stop-btn:active {
     background: rgba(255, 255, 255, 0.3);
-    transform: scale(0.95); /* Little haptic-style visual feedback */
+    transform: scale(0.95);
+    /* Little haptic-style visual feedback */
+}
+
+/* Swipe Feedback Indicators */
+.swipe-hint {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 60px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: rgba(255, 152, 0, 0.5);
+    /* Matching your orange theme */
+}
+
+.hint-left {
+    left: 0;
+    background: linear-gradient(to right, rgba(255, 152, 0, 0.1), transparent);
+}
+
+.hint-right {
+    right: 0;
+    background: linear-gradient(to left, rgba(255, 152, 0, 0.1), transparent);
+}
+
+.hint-visible {
+    opacity: 1;
 }
