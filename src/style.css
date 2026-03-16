@@ -2,7 +2,11 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    --primary-audio-colour: #ff9800;
+    --primary-audio-colour-50: rgba(255, 152, 0, 0.5);
+    --primary-audio-colour-10: rgba(255, 152, 0, 0.1);
 }
+
 
 :host {
     background: black;
@@ -19,7 +23,6 @@
 .overlay {
     width: 420px;
     flex-shrink: 0;
-    /* Prevents the container from squishing */
     max-width: 100vw;
     min-height: 100vh;
     padding: 40px 20px;
@@ -39,15 +42,12 @@
 
 
 #nav-bar {
-    /* Since buttons are now absolute, the nav-bar div just needs to 
-       be a container that doesn't interfere with clicks below it */
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     pointer-events: none;
-    /* Let clicks pass through the container... */
     z-index: 10;
 }
 
@@ -73,14 +73,11 @@
 
 #nav-bar .nav {
     pointer-events: auto;
-    /* ...but let the buttons themselves be clickable */
 }
 
-/* Bottom Navigation - Move Previous/Next to a "Toolbar" feel */
 .previous,
 .next {
     position: absolute;
-    /* Relative to the .overlay */
     bottom: calc(20px + env(safe-area-inset-bottom));
 }
 
@@ -90,12 +87,10 @@
 
 .next {
     right: 20px;
-    background: #ff9800;
-    /* Primary action color for 'Next' */
+    background: var(--primary-audio-colour);
     border: none;
 }
 
-/* Menu stays at the top */
 .menu {
     position: absolute;
     top: 15px;
@@ -147,7 +142,6 @@ h1 {
     opacity: 0;
 }
 
-/* starts hidden, then fades */
 
 /* buttons */
 
@@ -163,7 +157,7 @@ h1 {
 
 .listen,
 .restart {
-    background: orange;
+    background: var(--primary-audio-colour);
     border: none;
     padding: 14px 30px;
     border-radius: 30px;
@@ -175,17 +169,17 @@ h1 {
 .audio-controls {
     display: inline-flex;
     align-items: center;
-    border: 2px solid orange;
+    border: 2px solid var(--primary-audio-colour);
     border-radius: 30px;
     overflow: hidden;
-    background-color: orange;
+    background-color: var(--primary-audio-colour);
     /* Prevent text selection on long-press */
     -webkit-user-select: none;
     user-select: none;
 }
 
 .audio-controls-group button {
-    background: orange;
+    background: var(--primary-audio-colour);
     border: none;
     padding: 18px 22px;
     cursor: pointer;
@@ -193,10 +187,7 @@ h1 {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Layout for the rest of your buttons */
 
-
-/* The animation definition */
 @keyframes pulse {
     0% {
         transform: scale(1);
@@ -214,16 +205,12 @@ h1 {
     }
 }
 
-/* The class we will trigger with JS */
 .playing {
     display: inline-block;
-    /* Required for transform/scale to work */
     animation: pulse 1.5s ease-in-out infinite;
     color: white;
-    /* Optional: makes it pop against the orange */
 }
 
-/* Optional: center the headphones better in the group */
 #headphones {
     font-size: 1.1rem;
     padding: 0 5px;
@@ -254,8 +241,7 @@ h1 {
     outline: none;
     margin-bottom: 15px;
     cursor: pointer;
-    /* This creates the 'fill' effect */
-    background: linear-gradient(to right, #ff9800 0%, rgba(255, 255, 255, 0.3) 0%);
+    background: linear-gradient(to right, var(--primary-audio-colour) 0%, rgba(255, 255, 255, 0.3) 0%);
 }
 
 #progressBar::-webkit-slider-thumb {
@@ -263,19 +249,17 @@ h1 {
     appearance: none;
     width: 20px;
     height: 20px;
-    background: #ff9800;
-    /* Your orange */
+    background: var(--primary-audio-colour);
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid white;
-    /* Makes the orange pop */
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
 #progressBar::-moz-range-thumb {
     width: 20px;
     height: 20px;
-    background: #ff9800;
+    background: var(--primary-audio-colour);
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid white;
@@ -286,41 +270,31 @@ h1 {
     width: 100%;
     display: flex;
     flex-direction: row;
-    /* Flow horizontally */
     flex-wrap: wrap;
-    /* Wrap to next line if no room */
     justify-content: center;
-    /* Center the "cloud" */
     gap: 8px;
-    /* Tighter gap for tag cloud feel */
     margin-top: 20px;
 }
 
 .menu-stop-btn {
-    /* Remove width: 100% if it was there */
     width: auto;
 
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
-
-    /* Slimmer padding for a tag-like appearance */
     padding: 8px 16px;
     border-radius: 20px;
-    /* Pill shape looks better for tags */
 
     font-size: 14px;
     cursor: pointer;
     backdrop-filter: blur(5px);
     transition: all 0.2s ease;
     white-space: nowrap;
-    /* Prevent button text from breaking weirdly */
 }
 
 .menu-stop-btn:active {
     background: rgba(255, 255, 255, 0.3);
     transform: scale(0.95);
-    /* Little haptic-style visual feedback */
 }
 
 /* Swipe Feedback Indicators */
@@ -337,18 +311,17 @@ h1 {
     align-items: center;
     justify-content: center;
     font-size: 2rem;
-    color: rgba(255, 152, 0, 0.5);
-    /* Matching your orange theme */
+    color: var(--primary-audio-colour-50);
 }
 
 .hint-left {
     left: 0;
-    background: linear-gradient(to right, rgba(255, 152, 0, 0.1), transparent);
+    background: linear-gradient(to right, var(--primary-audio-colour-10), transparent);
 }
 
 .hint-right {
     right: 0;
-    background: linear-gradient(to left, rgba(255, 152, 0, 0.1), transparent);
+    background: linear-gradient(to left, var(--primary-audio-colour-10), transparent);
 }
 
 .hint-visible {
