@@ -65,7 +65,6 @@
     text-decoration: none;
     cursor: pointer;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    /*transition: background 0.2s ease;*/
 }
 
 .nav:active {
@@ -123,6 +122,33 @@ h1 {
     line-height: 1.6;
 }
 
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+#title.fade-in {
+    animation-delay: 0s;
+}
+
+#desc.fade-in {
+    animation-delay: 0.2s;
+    opacity: 0;
+}
+
+/* starts hidden, then fades */
+
 /* buttons */
 
 .buttons {
@@ -151,7 +177,6 @@ h1 {
     align-items: center;
     border: 2px solid orange;
     border-radius: 30px;
-    /* Slightly more rounded for mobile feel */
     overflow: hidden;
     background-color: orange;
     /* Prevent text selection on long-press */
@@ -163,10 +188,8 @@ h1 {
     background: orange;
     border: none;
     padding: 18px 22px;
-    /* Optimized for touch */
     cursor: pointer;
     font-size: 1.4rem;
-    /* Slightly larger icons */
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -207,28 +230,56 @@ h1 {
     user-select: none;
 }
 
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.buffering {
+    animation: spin 1s linear infinite;
+    opacity: 0.6;
+}
+
 #progressBar {
     -webkit-appearance: none;
     appearance: none;
-    width: 75%;
+    width: 80%;
     height: 8px;
-    background: rgba(255, 255, 255, 0.3);
     border-radius: 5px;
     outline: none;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
     cursor: pointer;
+    /* This creates the 'fill' effect */
+    background: linear-gradient(to right, #ff9800 0%, rgba(255, 255, 255, 0.3) 0%);
 }
 
-/* The "thumb" or handle of the slider */
 #progressBar::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+    background: #ff9800;
+    /* Your orange */
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid white;
+    /* Makes the orange pop */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+#progressBar::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
     background: #ff9800;
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
 #menu-container {
