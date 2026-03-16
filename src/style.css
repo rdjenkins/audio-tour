@@ -187,6 +187,23 @@ h1 {
     -webkit-tap-highlight-color: transparent;
 }
 
+.audio-controls button:active svg {
+    transform: scale(0.9);
+    transition: transform 0.1s ease;
+}
+
+.audio-controls svg {
+    display: block;
+    margin: auto;
+}
+
+.audio-controls button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+    -webkit-tap-highlight-color: transparent;
+}
 
 @keyframes pulse {
     0% {
@@ -227,7 +244,7 @@ h1 {
     }
 }
 
-.buffering {
+#headphones.buffering svg {
     animation: spin 1s linear infinite;
     opacity: 0.6;
 }

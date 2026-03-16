@@ -10,10 +10,34 @@ class AudioTourPlayer extends HTMLElement {
         this.currentIndex = 0;
 
         // SVG icons
-        this.playIcon = `<img src="play.svg" height="24" width="24">`;
-        this.pauseIcon = `<img src="pause.svg" height="24" width="24">`;
-        this.restartIcon = `<img src="restart.svg" height="24" width="24">`;
-        this.headphonesIcon = `<img src="headphones.svg" height="24" width="24">`;
+        this.playIcon = `
+<svg viewBox="0 0 402.917 402.917" width="24" height="24" fill="#FFFFFF">
+    <path d="m 102.42908,20.02572 v 361.213 c 0,7.447 3.972,14.333 10.427,18.063 6.46,3.724 14.398,3.724 20.853,0 l 216.443,-180.609 c 6.452,-3.719 10.436,-10.604 10.436,-18.058 0,-7.451 -3.978,-14.34 -10.436,-18.061 L 133.70808,1.9677204 c -3.227,-1.86199999 -6.826,-2.79 -10.426,-2.79 -3.605,0 -7.199,0.93400001 -10.427,2.79 -6.455,3.718 -10.426,10.6069986 -10.426,18.0579996 z"/>
+</svg>`;
+        this.pauseIcon = `
+<svg viewBox="0 0 402.917 402.917" width="24" height="24" fill="#FFFFFF">
+    <path d="M85 0 h90 v402.917 h-90 z M227.917 0 h90 v402.917 h-90 z"/>
+</svg>`;
+        this.restartIcon = `
+<svg viewBox="0 0 402.917 402.917" width="24" height="24" fill="#FFFFFF">
+    <path d="m 386.004,20.848 v 361.213 c 0,7.447 -3.972,14.333 -10.427,18.063 -6.46,3.724 -14.398,3.724 -20.853,0 L 138.281,219.515 c -6.452,-3.719 -10.436,-10.604 -10.436,-18.058 0,-7.451 3.978,-14.34 10.436,-18.061 L 354.725,2.79 C 357.952,0.928 361.551,0 365.151,0 c 3.605,0 7.199,0.934 10.427,2.79 6.455,3.718 10.426,10.607 10.426,18.058 z M 94.066,0.201 H 25.261 c -4.613,0 -8.349,3.735 -8.349,8.34 v 385.808 c 0,4.604 3.735,8.34 8.349,8.34 h 68.805 c 4.607,0 8.34,-3.735 8.34,-8.34 V 8.547 c 0,-4.604 -3.733,-8.346 -8.34,-8.346 z"/>
+</svg>`;
+        this.headphonesIcon = `
+    <svg viewBox="0 0 330 330" width="24" height="24" fill="#000000" style="display: block;">
+        <path d="M300,175.799v-21.557c0-74.44-60.561-135-135-135s-135,60.56-135,135v21.557
+            c-18.204,13.697-30,35.476-30,59.959c0,41.355,33.644,75,75,75c8.284,0,15-6.716,15-15v-120c0-8.284-6.716-15-15-15
+            c-5.136,0-10.152,0.521-15,1.51v-8.025c0-57.897,47.103-105,105-105s105,47.103,105,105v8.025c-4.848-0.989-9.864-1.51-15-1.51
+            c-8.284,0-15,6.716-15,15v120c0,8.284,6.716,15,15,15c41.355,0,75-33.645,75-75C330,211.274,318.204,189.496,300,175.799z"/>
+    </svg>`;
+        this.leftArrow = `
+    <svg viewBox="0 0 565.88 565.88" width="24" height="24" fill="currentColor">
+        <path d="m228.08 517.36c5.976 5.977 10.819 3.97 10.819-4.482v-65.569c0-8.449 6.852-15.301 15.301-15.301h296.38c8.449 0 15.301-6.851 15.301-15.3v-267.53c0-8.448-6.852-15.3-15.301-15.3h-296.38c-8.449 0-15.301-6.852-15.301-15.3v-65.573c0-8.448-4.844-10.456-10.819-4.482l-223.6 223.6c-5.977 5.977-5.977 15.664 0 21.638z"/>
+    </svg>`;
+
+        this.rightArrow = `
+    <svg viewBox="0 0 565.88 565.88" width="24" height="24" fill="currentColor" style="transform: rotate(180deg);">
+        <path d="m228.08 517.36c5.976 5.977 10.819 3.97 10.819-4.482v-65.569c0-8.449 6.852-15.301 15.301-15.301h296.38c8.449 0 15.301-6.851 15.301-15.3v-267.53c0-8.448-6.852-15.3-15.301-15.3h-296.38c-8.449 0-15.301-6.852-15.301-15.3v-65.573c0-8.448-4.844-10.456-10.819-4.482l-223.6 223.6c-5.977 5.977-5.977 15.664 0 21.638z"/>
+    </svg>`;
     }
 
     connectedCallback() {
@@ -31,8 +55,8 @@ class AudioTourPlayer extends HTMLElement {
             ${playerStyles}
         </style>
         <div class="overlay" id="main-container">
-            <div id="hint-prev" class="swipe-hint hint-left">⬅</div>
-            <div id="hint-next" class="swipe-hint hint-right">➡</div>
+            <div id="hint-prev" class="swipe-hint hint-left">${this.leftArrow}</div>
+            <div id="hint-next" class="swipe-hint hint-right">${this.rightArrow}</div>
 
             <div id="nav-bar"></div>
 
@@ -132,16 +156,13 @@ class AudioTourPlayer extends HTMLElement {
             headphones.classList.add("buffering");
         });
 
-        // Remove loading state when audio actually starts playing
-        voice.addEventListener("playing", () => {
-            headphones.classList.remove("buffering");
-        });
+        // Ensure it stops when it should
+        const stopBuffer = () => headphones.classList.remove("buffering");
 
-        // Ensure it stops if there's an error
-        voice.addEventListener("error", () => {
-            headphones.classList.remove("buffering");
-            console.error("Audio failed to load.");
-        });
+        voice.addEventListener("playing", stopBuffer);
+        voice.addEventListener("canplay", stopBuffer);
+        voice.addEventListener("pause", stopBuffer);
+        voice.addEventListener("error", stopBuffer);
 
         /* Swipe logic for devices with touch input */
 
