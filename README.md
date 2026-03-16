@@ -1,6 +1,6 @@
 # About
 
-Building a reliable, offline-ready audio player for the web is surprisingly hard. This library handles the edge cases (caching, range requests, touch gestures) so you can focus on the content.
+Building a reliable, offline-ready audio player for the web is time consuming. This library handles the edge cases (caching, range requests, touch gestures) so you can focus on the content.
 
 This is the audio tour software for <https://celticquietplaces.com/>. It is being designed as a library so that it can be used in our other projects such as Grampound Digital Twin.
 
