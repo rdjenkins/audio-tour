@@ -38,9 +38,27 @@ class AudioTourPlayer extends HTMLElement {
     <svg viewBox="0 0 565.88 565.88" width="24" height="24" fill="currentColor" style="transform: rotate(180deg);">
         <path d="m228.08 517.36c5.976 5.977 10.819 3.97 10.819-4.482v-65.569c0-8.449 6.852-15.301 15.301-15.301h296.38c8.449 0 15.301-6.851 15.301-15.3v-267.53c0-8.448-6.852-15.3-15.301-15.3h-296.38c-8.449 0-15.301-6.852-15.301-15.3v-65.573c0-8.448-4.844-10.456-10.819-4.482l-223.6 223.6c-5.977 5.977-5.977 15.664 0 21.638z"/>
     </svg>`;
+        this.downloadIcon = `
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+    </svg>`;
     }
 
     connectedCallback() {
+        if ('serviceWorker' in navigator) {
+            // We use a relative path without the dot to ensure it hits the current folder
+            navigator.serviceWorker.register('sw.js', { scope: './' })
+                .then(registration => {
+                    console.log('Service Worker registered!');
+
+                    // This force-updates the worker if the file changed
+                    registration.update();
+                })
+                .catch(error => {
+                    console.error('Service Worker registration failed:', error);
+                });
+        }
+
         this.render();
 
         // Handle URL parameters for tour selection
@@ -98,9 +116,15 @@ class AudioTourPlayer extends HTMLElement {
 
         listenBtn.addEventListener("click", () => {
             if (voice.paused) {
-                voice.play();
-                listenBtn.innerHTML = this.pauseIcon;
-                headphones.classList.add("playing");
+                try {
+                    voice.play();
+                    listenBtn.innerHTML = this.pauseIcon;
+                    headphones.classList.add("playing");
+                } catch (error) {
+                    console.error("Error playing audio:", error);
+                    listenBtn.innerHTML = this.playIcon;
+                    headphones.classList.remove("playing");
+                }
             } else {
                 voice.pause();
                 listenBtn.innerHTML = this.playIcon;
@@ -254,6 +278,35 @@ class AudioTourPlayer extends HTMLElement {
 
         // If we are on the Home/Menu page (index 0), build the buttons
         if (index === 0) {
+
+            const downloadBtn = document.createElement("button");
+            downloadBtn.id = "download-btn";
+            downloadBtn.className = "menu-stop-btn download-main";
+            downloadBtn.innerHTML = `${this.downloadIcon} Checking status...`;
+            menuContainer.appendChild(downloadBtn);
+
+            this.getCacheStatus().then(status => {
+                if (status.error === 'Insecure Context') {
+                    downloadBtn.innerHTML = "Offline Not Supported (Insecure)";
+                    downloadBtn.disabled = true;
+                    downloadBtn.style.opacity = "0.5";
+                    return;
+                }
+                if (status.isComplete) {
+                    // Already fully downloaded
+                    this.updateDownloadUI(100);
+                    downloadBtn.disabled = true;
+                } else if (status.found > 0) {
+                    // Partially downloaded (e.g. 40%)
+                    this.updateDownloadUI(status.percent);
+                } else {
+                    // Nothing downloaded yet
+                    downloadBtn.innerHTML = `${this.downloadIcon} Download for Offline Use`;
+                }
+            });
+
+            downloadBtn.onclick = () => this.preloadTourAssets();
+
             const stops = this.tourData.slice(1).map((stopData, idx) => ({
                 title: stopData.title,
                 targetIndex: idx + 1
@@ -362,6 +415,74 @@ class AudioTourPlayer extends HTMLElement {
         if (newIndex < 0 || newIndex >= this.tourData.length) return; // Out of bounds check
         this.renderStop(newIndex);
     }
+
+    getRequiredUrls() {
+        if (!this.tourData) return [];
+        const urls = new Set();
+        urls.add('./');
+        urls.add('sw.js');
+        this.tourData.forEach(stop => {
+            if (stop.audio) urls.add(stop.audio);
+            if (stop.image) urls.add(stop.image);
+        });
+        return Array.from(urls);
+    }
+
+    async getCacheStatus() {
+        if (!('caches' in window)) {
+            return { percent: 0, isComplete: false, error: 'Insecure Context' };
+        }
+        const required = this.getRequiredUrls();
+        if (required.length === 0) return { percent: 0, isComplete: false };
+
+        const cache = await caches.open('celtic-tour-v1');
+        let foundCount = 0;
+
+        for (const url of required) {
+            const match = await cache.match(url);
+            if (match) foundCount++;
+        }
+
+        return {
+            percent: Math.round((foundCount / required.length) * 100),
+            isComplete: foundCount === required.length,
+            total: required.length,
+            found: foundCount
+        };
+    }
+
+    async preloadTourAssets() {
+        const btn = this.shadowRoot.getElementById("download-btn");
+        const urls = this.getRequiredUrls();
+        const cache = await caches.open('celtic-tour-v1');
+
+        btn.disabled = true;
+        let completed = 0;
+
+        for (const url of urls) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Network response was not ok');
+
+                await cache.put(url, response);
+                completed++;
+
+                // Update the progress bar visually
+                const progress = Math.round((completed / urls.length) * 100);
+                this.updateDownloadUI(progress);
+            } catch (err) {
+                console.error(`Failed to cache: ${url}`, err);
+            }
+        }
+    }
+
+    updateDownloadUI(percent) {
+        const btn = this.shadowRoot.getElementById("download-btn");
+        // You can update the button background to act as a progress bar!
+        btn.style.background = `linear-gradient(to right, #2e7d32 ${percent}%, #333 ${percent}%)`;
+        btn.innerHTML = percent < 100 ? `Downloading ${percent}%` : "✓ Offline Ready";
+    }
+
 }
 
 customElements.define("audio-tour-player", AudioTourPlayer);

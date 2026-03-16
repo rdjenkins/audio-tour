@@ -97,6 +97,33 @@
     left: 15px;
 }
 
+#download-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 100;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: #333;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 140px;
+    transition: all 0.3s ease;
+}
+
+#download-btn.complete {
+    border-color: #2e7d32;
+    background: #2e7d32;
+}
+
+.menu-stop-btn.download-main:disabled {
+    opacity: 0.8;
+    cursor: wait;
+}
 
 /* title */
 
