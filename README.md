@@ -26,18 +26,23 @@ NPM Package: Soon to be available as a lightweight, zero-dependency npm module.
 
 For now, simply include the script in your project. (NPM support coming soon!)
 
+```
 <script type="module" src="./audio-tour-player.js"></script>
+```
 
 ### Add the Player to your HTML
 
 Place the custom element wherever you want the tour to appear. You can pass a specific tour via URL parameters (e.g., ?tour=st-nuns) or configure the default in the script.
 
+```
 <audio-tour-player></audio-tour-player>
+```
 
 ### Create your tour.json
 
 The heart of your tour is a simple JSON file. Place this in a /tours folder. Each "stop" supports a title, description, background image, and an audio track.
 
+```
 {
   "stops": [
     {
@@ -54,6 +59,7 @@ The heart of your tour is a simple JSON file. Place this in a /tours folder. Eac
     }
   ]
 }
+```
 
 ### Enable Offline Capabilities (Optional)
 
