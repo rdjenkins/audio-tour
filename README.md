@@ -2,25 +2,27 @@
 
 ![npm version](https://img.shields.io/npm/v/audio-tour-player)
 
-Building a reliable, offline-ready audio player for the web is time consuming. This library handles the edge cases (caching, range requests, touch gestures) so you can focus on the content.
+Building a reliable, offline-ready audio player for the web is time consuming. This library handles the audio controls, and extras such as caching and touch gestures so you can focus on the content.
 
 This is the audio tour software for <https://celticquietplaces.com/>. It is being designed as a library so that it can be used in our other projects such as Grampound Digital Twin.
 
 ## Features
 
-🧩 Framework Agnostic – Built with native Web Components. Seamlessly drop it into React, Vue, Svelte, or a plain HTML file without changing a line of code.
+Framework Agnostic – Built with native Web Components. Seamlessly drop it into React, Vue, Svelte, or a plain HTML file without changing a line of code.
 
-🔌 JSON-Driven Content – Define your entire tour in a single .json file. Support for local assets or remote media URLs makes deployment a breeze.
+JSON-Driven Content – Define your entire tour in a single .json file. Support for local assets or remote media URLs makes deployment a breeze.
 
-🔋 Bulletproof Offline Mode – First-class support for the Cache API and Service Workers. Your users can download tours and explore with zero signal.
+Bulletproof Offline Mode – First-class support for the Cache API and Service Workers. Your users can download tours and explore with zero signal.
 
-🚀 Ultra Lightweight – Zero dependencies. Fast load times and a tiny bundle footprint mean your site stays snappy.
+Ultra Lightweight – Zero dependencies. Fast load times and a tiny bundle footprint mean your site stays snappy.
 
-🖐️ Native-Feel Interactions – Includes smooth touch gestures, swipe navigation, and high-performance SVG animations for a premium app feel.
+Whole page images - full page images with audio controls on top.
+
+Native-Feel Interactions – Includes smooth touch gestures, swipe navigation, and high-performance SVG animations for a premium app feel.
 
 ## Roadmap
 
-NPM Package: Soon to be available as a lightweight, zero-dependency npm module.
+NPM Package: Now available as a lightweight npm module.
 
 ## Getting started
 
@@ -34,7 +36,7 @@ Ideal for modern web projects using Vite, Webpack, or any JavaScript framework.
 npm install audio-tour-player
 ```
 
-Then, simply import it into your main JavaScript or TypeScript file:
+Then, import it into your main JavaScript or TypeScript file:
 
 ```
 import 'audio-tour-player';
@@ -42,7 +44,7 @@ import 'audio-tour-player';
 
 ### Add the Player to your HTML
 
-Place the custom element wherever you want the tour to appear. You can pass a specific tour URL.
+Use the custom element to display the tour. You can pass a specific tour URL.
 
 ```
 <audio-tour-player src="./tours/my-tour.json"></audio-tour-player>
@@ -56,7 +58,7 @@ Place the custom element wherever you want the tour to appear. You can pass a sp
 
 ### Create your my-tour.json
 
-The heart of your tour is a simple JSON file. It could be stored locally. If it is on a remote server or different domain then remember to set CORS on your server. Each "stop" supports a title, description, background image, and an audio track.
+The tour is controlled by a simple JSON file. It could be stored locally. If any files are a remote server or different domain then remember to set CORS on that server. Each "stop" supports a title, description, background image, and an audio track.
 
 ```
 {
@@ -64,8 +66,7 @@ The heart of your tour is a simple JSON file. It could be stored locally. If it 
     {
       "title": "Welcome to the Tour",
       "desc": "This is the main menu. From here you can download the tour for offline use or select a specific stop.",
-      "image": "assets/intro-bg.jpg",
-      "audio": null
+      "image": "assets/intro-bg.jpg"
     },
     {
       "title": "The Ancient Well",
