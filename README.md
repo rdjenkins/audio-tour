@@ -42,7 +42,7 @@ import 'audio-tour-player';
 
 ### Add the Player to your HTML
 
-Place the custom element wherever you want the tour to appear. You can pass a specific tour via URL parameters (e.g., ?tour=st-nuns) or configure the default in the script.
+Place the custom element wherever you want the tour to appear. You can pass a specific tour URL.
 
 ```
 <audio-tour-player src="./tours/my-tour.json"></audio-tour-player>
@@ -56,7 +56,7 @@ Place the custom element wherever you want the tour to appear. You can pass a sp
 
 ### Create your my-tour.json
 
-The heart of your tour is a simple JSON file. Place this in a /tours folder. Each "stop" supports a title, description, background image, and an audio track.
+The heart of your tour is a simple JSON file. It could be stored locally. If it is on a remote server or different domain then remember to set CORS on your server. Each "stop" supports a title, description, background image, and an audio track.
 
 ```
 {
@@ -79,12 +79,15 @@ The heart of your tour is a simple JSON file. Place this in a /tours folder. Eac
 
 ### Offline Support
 
-To enable offline caching, ensure `sw.js` is in your public root and call (see Add the player to your HTML section above):
+To enable offline caching, ensure `sw.js` is in your public root and call:
 
-```javascript
+```
+javascript
 const player = document.querySelector('audio-tour-player');
 player.enableOffline();
 ```
+
+(see Add the player to your HTML section above)
 
 ### Suggested folder structure
 
@@ -103,7 +106,7 @@ project-root/
 
 If you want to modify the player or run the built-in demo:
 
-    Clone the repo: `git clone https://github.com/your-username/audio-tour-player.git`
+    Clone the repo: `git clone https://github.com/rdjenkins/audio-tour.git`
 
     Install dependencies: `npm install`
 
