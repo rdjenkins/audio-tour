@@ -48,7 +48,7 @@ Place the custom element wherever you want the tour to appear. You can pass a sp
 <audio-tour-player src="./tours/my-tour.json"></audio-tour-player>
 
 <script type="module">
-  // 2. (Optional) Enable offline support if using the provided sw.js
+  // (Optional) Enable offline support if using the provided sw.js
   const player = document.querySelector('audio-tour-player');
   player.enableOffline();
 </script>
