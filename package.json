@@ -1,11 +1,14 @@
 {
-  "name": "@rdjenkins/audio-tour-player",
+  "name": "audio-tour-player",
   "version": "1.0.0",
   "type": "module",
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "sw.js",
+    "LICENSE"
   ],
-  "main": "./dist/audio-tour-player.umd.cjs",
+  "main": "./dist/audio-tour-player.js",
   "module": "./dist/audio-tour-player.js",
   "exports": {
     ".": {
@@ -14,12 +17,25 @@
     },
     "./style.css": "./dist/style.css"
   },
+  "keywords": [
+    "web-component",
+    "audio-player",
+    "pwa",
+    "offline-first",
+    "tour-guide"
+  ],
+  "author": "Dean Jenkins of CelticQuietPlaces.com",
+  "license": "MIT",
   "scripts": {
-    "dev": "vite --host",
-    "build": "vite build && node prepare-site.js",
-    "preview": "vite preview"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prepare-demo": "node prepare-site.js"
   },
   "devDependencies": {
     "vite": "^6.0.0"
+  },
+  "dependencies": {
+    "terser": "^5.46.1"
   }
 }

@@ -1,20 +1,22 @@
 # About
 
+![npm version](https://img.shields.io/npm/v/audio-tour-player)
+
 Building a reliable, offline-ready audio player for the web is time consuming. This library handles the edge cases (caching, range requests, touch gestures) so you can focus on the content.
 
 This is the audio tour software for <https://celticquietplaces.com/>. It is being designed as a library so that it can be used in our other projects such as Grampound Digital Twin.
 
 ## Features
 
-​Zero-Config UI: A robust, mobile-first audio experience right out of the box.
+🧩 Framework Agnostic – Built with native Web Components. Seamlessly drop it into React, Vue, Svelte, or a plain HTML file without changing a line of code.
 
-​Framework Agnostic: Built with pure Web Components. Use it with React, Vue, Svelte, or just a plain HTML file.
+🔌 JSON-Driven Content – Define your entire tour in a single .json file. Support for local assets or remote media URLs makes deployment a breeze.
 
-​JSON-Driven Storytelling: Define your entire tour in a simple .json file. Link to local files or remote URLs - the player handles the rest.
+🔋 Bulletproof Offline Mode – First-class support for the Cache API and Service Workers. Your users can download tours and explore with zero signal.
 
-​Bulletproof Offline Mode: One-tap preloading using the Cache API and Service Workers. Your users can keep exploring even in "dead zones" or deep in the countryside.
+🚀 Ultra Lightweight – Zero dependencies. Fast load times and a tiny bundle footprint mean your site stays snappy.
 
-​Native Feel: Includes smooth touch gestures (swipe to navigate) and high-performance SVG animations.
+🖐️ Native-Feel Interactions – Includes smooth touch gestures, swipe navigation, and high-performance SVG animations for a premium app feel.
 
 ## Roadmap
 
@@ -24,10 +26,18 @@ NPM Package: Soon to be available as a lightweight, zero-dependency npm module.
 
 ### Installation
 
-For now, simply include the script in your project. (NPM support coming soon!)
+#### Via npm
+
+Ideal for modern web projects using Vite, Webpack, or any JavaScript framework.
 
 ```
-<script type="module" src="./audio-tour-player.js"></script>
+npm install audio-tour-player
+```
+
+Then, simply import it into your main JavaScript or TypeScript file:
+
+```
+import 'audio-tour-player';
 ```
 
 ### Add the Player to your HTML
@@ -35,10 +45,16 @@ For now, simply include the script in your project. (NPM support coming soon!)
 Place the custom element wherever you want the tour to appear. You can pass a specific tour via URL parameters (e.g., ?tour=st-nuns) or configure the default in the script.
 
 ```
-<audio-tour-player></audio-tour-player>
+<audio-tour-player src="./tours/my-tour.json"></audio-tour-player>
+
+<script type="module">
+  // 2. (Optional) Enable offline support if using the provided sw.js
+  const player = document.querySelector('audio-tour-player');
+  player.enableOffline();
+</script>
 ```
 
-### Create your tour.json
+### Create your my-tour.json
 
 The heart of your tour is a simple JSON file. Place this in a /tours folder. Each "stop" supports a title, description, background image, and an audio track.
 
@@ -61,9 +77,47 @@ The heart of your tour is a simple JSON file. Place this in a /tours folder. Eac
 }
 ```
 
-### Enable Offline Capabilities (Optional)
+### Offline Support
 
-To enable the "Download for Offline Use" feature, ensure the sw.js file is in your root directory. The player will automatically attempt to register the Service Worker and provide the download UI to your users.
+To enable offline caching, ensure `sw.js` is in your public root and call (see Add the player to your HTML section above):
+
+```javascript
+const player = document.querySelector('audio-tour-player');
+player.enableOffline();
+```
+
+### Suggested folder structure
+
+```
+project-root/
+├── index.html
+├── sw.js                # Copy this from node_modules/audio-tour-player/sw.js
+├── audio-tour-player.js
+├── tours/
+│   └── my-tour.json
+├── images/
+└── audio/
+```
+
+## Local Development
+
+If you want to modify the player or run the built-in demo:
+
+    Clone the repo: `git clone https://github.com/your-username/audio-tour-player.git`
+
+    Install dependencies: `npm install`
+
+    Prepare the demo files: `npm run prepare-demo`
+
+    copy the contents of the dist/ folder to you server ... OR
+
+    Start the preview server: `npm run preview`
+
+## License
+
+This project is licensed under the MIT License.
+
+That means you are free to use, copy, modify, merge, publish, and even sell this software in both personal and commercial projects. All we ask is that you keep the original copyright notice.
 
 ## Acknowledgements
 

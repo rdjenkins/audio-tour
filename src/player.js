@@ -44,27 +44,34 @@ class AudioTourPlayer extends HTMLElement {
     </svg>`;
     }
 
-    connectedCallback() {
+    enableOffline(swPath = 'sw.js') {
         if ('serviceWorker' in navigator) {
-            // We use a relative path without the dot to ensure it hits the current folder
-            navigator.serviceWorker.register('sw.js', { scope: './' })
+            return navigator.serviceWorker.register(swPath, { scope: './' })
                 .then(registration => {
-                    console.log('Service Worker registered!');
-
-                    // This force-updates the worker if the file changed
+                    console.log('AudioTour: Offline mode enabled.');
                     registration.update();
+                    return registration;
                 })
                 .catch(error => {
-                    console.error('Service Worker registration failed:', error);
+                    console.error('AudioTour: Service Worker failed:', error);
+                    throw error;
                 });
+        } else {
+            console.warn("AudioTour: Browser does not support Service Workers.");
+            return Promise.reject("Not supported");
         }
+    }
+
+    connectedCallback() {
 
         this.render();
 
-        // Handle URL parameters for tour selection
-        const urlParams = new URLSearchParams(window.location.search);
-        const tourId = urlParams.get('tour') || 'st-nuns';
-        this.initTour(`./tours/${tourId}.json`);
+        this.enableOffline();
+
+        // Allow the user to define the tour path in HTML
+        const tourPath = this.getAttribute('src') || './tours/tour.json';
+        console.log("tourpath = ", tourPath)
+        this.initTour(tourPath);
     }
 
     render() {
@@ -249,7 +256,7 @@ class AudioTourPlayer extends HTMLElement {
             this.renderStop(0);
         } catch (error) {
             console.error("Error loading tour:", error);
-            this.shadowRoot.getElementById("desc").innerText = "Sorry. No tour available.";
+            this.shadowRoot.getElementById("desc").innerText = "Sorry. No tour available at (" + jsonPath + ") " + error;
             this.shadowRoot.querySelector(".buttons").style.display = "none";
         }
     }
