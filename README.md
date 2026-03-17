@@ -106,15 +106,15 @@ project-root/
 
 If you want to modify the player or run the built-in demo:
 
-    Clone the repo: `git clone https://github.com/rdjenkins/audio-tour.git`
+Clone the repo: `git clone https://github.com/rdjenkins/audio-tour.git`
 
-    Install dependencies: `npm install`
+Install dependencies: `npm install`
 
-    Prepare the demo files: `npm run prepare-demo`
+Prepare the demo files: `npm run prepare-demo`
 
-    copy the contents of the dist/ folder to you server ... OR
+copy the contents of the dist/ folder to you server ... OR
 
-    Start the preview server: `npm run preview`
+Start the preview server: `npm run preview`
 
 ## License
 
