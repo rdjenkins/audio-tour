@@ -2,9 +2,9 @@
 
 ![npm version](https://img.shields.io/npm/v/audio-tour-player)
 
-Building a reliable, offline-ready audio player for the web is time consuming. This library handles the audio controls, and extras such as caching and touch gestures so you can focus on the content.
+We needed to deliver offline-capable audio tours for 100+ venues in rural Cornwall so just built our own library. It could be useful for your project as it handles the audio controls, and extras such as caching and touch gestures so you can focus on the content.
 
-This is the audio tour software for <https://celticquietplaces.com/>. It is being designed as a library so that it can be used in our other projects such as Grampound Digital Twin.
+This is the audio tour software for <https://celticquietplaces.com/>.
 
 ## Features
 
