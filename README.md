@@ -14,11 +14,11 @@ JSON-Driven Content – Define your entire tour in a single .json file. Support 
 
 Bulletproof Offline Mode – First-class support for the Cache API and Service Workers. Your users can download tours and explore with zero signal.
 
-Ultra Lightweight – Zero dependencies. Fast load times and a tiny bundle footprint mean your site stays snappy.
+Ultra Lightweight – Fast load times and a tiny bundle footprint.
 
-Whole page images - full page images with audio controls on top.
+Whole page experience - full page portrait images (on mobiles) with audio controls.
 
-Native-Feel Interactions – Includes smooth touch gestures, swipe navigation, and high-performance SVG animations for a premium app feel.
+Native-Feel Interactions – Includes smooth touch gestures, swipe navigation, and high-performance SVG animations for a premium app feel. Check out the spinning headphones.
 
 ## Roadmap
 
