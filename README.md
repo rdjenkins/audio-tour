@@ -2,7 +2,7 @@
 
 We needed to deliver offline-capable audio tours for 100+ venues in rural Cornwall so just built our own library. It could be useful for your project as it handles the audio controls, and extras such as caching and touch gestures so you can focus on the content.
 
-![npm version](https://img.shields.io/npm/v/audio-tour-player) <https://www.npmjs.com/package/audio-tour-player>
+[![npm version](https://img.shields.io/npm/v/audio-tour-player)](https://www.npmjs.com/package/audio-tour-player)
 
 This is the audio tour software for <https://celticquietplaces.com/>.
 
