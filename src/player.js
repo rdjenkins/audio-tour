@@ -256,7 +256,10 @@ class AudioTourPlayer extends HTMLElement {
             this.renderStop(0);
         } catch (error) {
             console.error("Error loading tour:", error);
-            this.shadowRoot.getElementById("desc").innerText = "Sorry. No tour available at (" + jsonPath + ") " + error;
+            this.shadowRoot.getElementById("desc").innerText = "Sorry. No tour available at '" + jsonPath + "'";
+            console.log("Sorry. No tour available at '" + jsonPath + "'. " +
+                "Check that your <audio-tour-player> tag has a src attribute pointing to a valid tour JSON file, " +
+                "and that the file is properly formatted.");
             this.shadowRoot.querySelector(".buttons").style.display = "none";
         }
     }
