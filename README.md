@@ -58,7 +58,7 @@ Use the custom element to display the tour. You can pass a specific tour URL.
 
 ### Create your my-tour.json
 
-The tour is controlled by a simple JSON file. It could be stored locally. If any files are a remote server or different domain then remember to set CORS on that server. Each "stop" supports a title, description, background image, and an audio track.
+The tour is controlled by a simple JSON file. If youbare going to work cross-origin (storing media and you json file on different domain) then remember to set CORS on that server. Each "stop" supports a title, description, background image, and an audio track.
 
 ```
 {
@@ -80,7 +80,7 @@ The tour is controlled by a simple JSON file. It could be stored locally. If any
 
 ### Offline Support
 
-To enable offline caching, ensure `sw.js` is in your public root and call:
+To enable offline caching, ensure the service worker `sw.js` is in the root of your project and call:
 
 ```
 javascript
@@ -88,7 +88,7 @@ const player = document.querySelector('audio-tour-player');
 player.enableOffline();
 ```
 
-(see Add the player to your HTML section above)
+(see 'Add the player to your HTML' section above)
 
 ### Suggested folder structure
 
