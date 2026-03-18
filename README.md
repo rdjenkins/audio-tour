@@ -1,8 +1,8 @@
 # About
 
-![npm version](https://img.shields.io/npm/v/audio-tour-player)
-
 We needed to deliver offline-capable audio tours for 100+ venues in rural Cornwall so just built our own library. It could be useful for your project as it handles the audio controls, and extras such as caching and touch gestures so you can focus on the content.
+
+![npm version](https://img.shields.io/npm/v/audio-tour-player)
 
 This is the audio tour software for <https://celticquietplaces.com/>.
 
@@ -103,19 +103,31 @@ project-root/
 └── audio/
 ```
 
-## Local Development
+## Vite / React / Svelt build frameworks
 
-If you want to modify the player or run the built-in demo:
+Using a bundler? Import the package in your main JS entry point instead.
 
-Clone the repo: `git clone https://github.com/rdjenkins/audio-tour.git`
+e.g. main.js
 
-Install dependencies: `npm install`
+```
+import 'audio-tour-player';
 
-Prepare the demo files: `npm run prepare-demo`
+const initPlayer = () => {
+  const player = document.querySelector('audio-tour-player');
+  
+  if (player) {
+    player.enableOffline();
+    console.log("Tour player ready and offline mode enabled.");
+  }
+};
 
-copy the contents of the dist/ folder to you server ... OR
+if (customElements.get('audio-tour-player')) {
+  initPlayer();
+} else {
+  customElements.whenDefined('audio-tour-player').then(initPlayer);
+}
+```
 
-Start the preview server: `npm run preview`
 
 ## License
 
