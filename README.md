@@ -21,9 +21,7 @@ Whole page experience - full page portrait images (on mobiles) with audio contro
 
 Native-Feel Interactions – Includes smooth touch gestures, swipe navigation, and high-performance SVG animations for a premium app feel. Check out the spinning headphones.
 
-## Roadmap
-
-NPM Package: Now available as a lightweight npm module.
+NPM Package: Available as a lightweight npm module. See an example [audio-tour-player-example](https://github.com/rdjenkins/audio-tour-player-example)
 
 ## Getting started
 
