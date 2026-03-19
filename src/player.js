@@ -377,7 +377,9 @@ class AudioTourPlayer extends HTMLElement {
         const progressBar = s.getElementById("progressBar");
         const voice = s.getElementById("voice");
 
-        if (stop.audio) {
+        const isSupportedAudio = /\.(mp3|ogg|wav)$/i.test(stop.audio);
+
+        if (isSupportedAudio) {
             controls.style.display = "flex";
             progressBar.style.display = "block";
             voice.src = stop.audio;
