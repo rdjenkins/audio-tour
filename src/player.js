@@ -8,6 +8,8 @@ class AudioTourPlayer extends HTMLElement {
         // State
         this.tourData = null;
         this.currentIndex = 0;
+        this.cacheName = 'celtic-tour-v1';
+        this.isOfflineReady = false;
 
         // SVG icons
         this.playIcon = `
@@ -68,7 +70,6 @@ class AudioTourPlayer extends HTMLElement {
 
         this.enableOffline();
 
-        // Allow the user to define the tour path in HTML
         const tourPath = this.getAttribute('src') || './tours/tour.json';
         console.log("tourpath = ", tourPath)
         this.initTour(tourPath);
@@ -305,7 +306,7 @@ class AudioTourPlayer extends HTMLElement {
                 if (status.isComplete) {
                     // Already fully downloaded
                     this.updateDownloadUI(100);
-                    downloadBtn.disabled = true;
+                    this.isOfflineReady = true;
                 } else if (status.found > 0) {
                     // Partially downloaded (e.g. 40%)
                     this.updateDownloadUI(status.percent);
@@ -315,7 +316,15 @@ class AudioTourPlayer extends HTMLElement {
                 }
             });
 
-            downloadBtn.onclick = () => this.preloadTourAssets();
+            downloadBtn.onclick = () => {
+                if (this.isOfflineReady) {
+                    // If it's already downloaded, the click means "Manage/Delete"
+                    this.clearOfflineData();
+                } else {
+                    // If it's not downloaded, the click starts the download
+                    this.preloadTourAssets();
+                }
+            }
 
             const stops = this.tourData.slice(1).map((stopData, idx) => ({
                 title: stopData.title,
@@ -445,7 +454,7 @@ class AudioTourPlayer extends HTMLElement {
         const required = this.getRequiredUrls();
         if (required.length === 0) return { percent: 0, isComplete: false };
 
-        const cache = await caches.open('celtic-tour-v1');
+        const cache = await caches.open(this.cacheName);
         let foundCount = 0;
 
         for (const url of required) {
@@ -464,7 +473,7 @@ class AudioTourPlayer extends HTMLElement {
     async preloadTourAssets() {
         const btn = this.shadowRoot.getElementById("download-btn");
         const urls = this.getRequiredUrls();
-        const cache = await caches.open('celtic-tour-v1');
+        const cache = await caches.open(this.cacheName);
 
         btn.disabled = true;
         let completed = 0;
@@ -484,13 +493,40 @@ class AudioTourPlayer extends HTMLElement {
                 console.error(`Failed to cache: ${url}`, err);
             }
         }
+        this.isOfflineReady = true;
+        btn.disabled = false;
     }
 
     updateDownloadUI(percent) {
         const btn = this.shadowRoot.getElementById("download-btn");
-        // You can update the button background to act as a progress bar!
+        if (!btn) return;
+
         btn.style.background = `linear-gradient(to right, #2e7d32 ${percent}%, #333 ${percent}%)`;
-        btn.innerHTML = percent < 100 ? `Downloading ${percent}%` : "✓ Offline Ready";
+        if (percent < 100) {
+            btn.innerHTML = `Downloading ${percent}%`;
+        } else {
+            btn.innerHTML = `✓ Offline Ready`;
+            btn.disabled = false;
+            btn.style.cursor = "pointer";
+        }
+    }
+
+    async clearOfflineData() {
+
+        const confirmed = window.confirm("Would you like to remove the offline files to save space?");
+
+        if (confirmed) {
+            try {
+                await window.caches.delete(this.cacheName);
+
+                this.isOfflineReady = false;
+                this.renderStop(0);
+
+                console.log("Offline data cleared.");
+            } catch (error) {
+                console.error("Failed to clear cache:", error);
+            }
+        }
     }
 
 }
