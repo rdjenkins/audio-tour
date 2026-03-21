@@ -14,7 +14,7 @@ export default defineConfig(({ command }) => {
       },
       rollupOptions: {
         output: {
-          inlineDynamicImports: true,
+          codeSplitting: false,
         }
       },
       minify: 'terser',

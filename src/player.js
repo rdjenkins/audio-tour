@@ -46,18 +46,17 @@ class AudioTourPlayer extends HTMLElement {
     </svg>`;
     }
 
-    enableOffline(swPath = 'sw.js') {
+    async enableOffline(swPath = 'sw.js') {
         if ('serviceWorker' in navigator) {
-            return navigator.serviceWorker.register(swPath, { scope: './' })
-                .then(registration => {
-                    console.log('AudioTour: Offline mode enabled.');
-                    registration.update();
-                    return registration;
-                })
-                .catch(error => {
-                    console.error('AudioTour: Service Worker failed:', error);
-                    throw error;
-                });
+            try {
+                const registration = await navigator.serviceWorker.register(swPath, { scope: './' });
+                console.log('AudioTour: Offline mode enabled.');
+                registration.update();
+                return registration;
+            } catch (error) {
+                console.error('AudioTour: Service Worker failed:', error);
+                throw error;
+            }
         } else {
             console.warn("AudioTour: Browser does not support Service Workers.");
             return Promise.reject("Not supported");
