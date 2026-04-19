@@ -3,7 +3,12 @@
 This is a note to myself as I maintain the npm package audio-tour-player
 
 ```
-npm build
+npm run build
+npm version patch
+
 npm login
+
 npm publish
+
+npm update
 ```

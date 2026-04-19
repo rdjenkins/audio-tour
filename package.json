@@ -24,7 +24,7 @@
     "offline-first",
     "tour-guide"
   ],
-  "author": "Dean Jenkins of CelticQuietPlaces.com",
+  "author": "Dean Jenkins dean@celticquietplaces.com",
   "license": "MIT",
   "scripts": {
     "dev": "npm run copy-sw && vite",
