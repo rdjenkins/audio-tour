@@ -4,9 +4,11 @@
  * It will be registered by the player and will cache the player library and tour data for offline use.
  * You can customize the caching strategy here if needed.
  * By default, it will cache all GET requests and serve from cache when offline.
+ * dean@celticquietplaces.com
  */
 
-const CACHE_NAME = 'celtic-tour-v1';
+const params = new URLSearchParams(self.location.search);
+const CACHE_NAME = params.get('cacheName') || 'audio-tour-player-cache-v1';
 
 self.addEventListener('install', (e) => self.skipWaiting());
 self.addEventListener('activate', (e) => e.waitUntil(clients.claim()));
@@ -25,6 +27,11 @@ self.addEventListener('fetch', (event) => {
                 if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
                     return networkResponse;
                 }
+                // store everything it is asked for
+                const responseToCache = networkResponse.clone();
+                caches.open(CACHE_NAME).then((cache) => {
+                    cache.put(event.request, responseToCache);
+                });
                 return networkResponse;
             });
         }).catch(() => {

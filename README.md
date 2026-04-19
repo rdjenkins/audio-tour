@@ -43,11 +43,19 @@ import 'audio-tour-player';
 
 ### Add the Player to your HTML
 
-Use the custom element to display the tour. You can pass a specific tour URL.
+Use the custom element to display the tour. Pass your specific tour URL.
 
 ```
 <audio-tour-player src="./tours/my-tour.json"></audio-tour-player>
 ```
+
+You can optionally define a specific cache name. e.g.
+
+```
+<audio-tour-player src="./tours/my-tour.json" cache-name="cqp1"></audio-tour-player>
+```
+
+The default cache name is "audio-tour-player-cache-v1".
 
 ### Create your my-tour.json
 
@@ -73,9 +81,9 @@ The tour is controlled by a simple JSON file. If youbare going to work cross-ori
 
 ### Offline Support
 
-To enable offline caching, ensure the service worker `sw.js` is in the root of your project.
+To enable offline caching, ensure the service worker `sw.js` is in the root of your project (or in your public/ folder depending on your build tool). You can copy the `sw.js` file from node_modules/audio-tour-player/sw.js
 
-(see 'Add the player to your HTML' section above)
+Offline support with a service worker only functions within a client's browser. They will need to visit the page and click the 'Download for offline use' button.
 
 ### Suggested folder structure
 

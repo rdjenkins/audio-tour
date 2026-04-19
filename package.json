@@ -1,6 +1,6 @@
 {
   "name": "audio-tour-player",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "type": "module",
   "files": [
     "dist",
@@ -27,10 +27,11 @@
   "author": "Dean Jenkins of CelticQuietPlaces.com",
   "license": "MIT",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "prepare-demo": "node prepare-site.js && echo 'deprecated - use audio-tour-player-example instead'"
+    "dev": "npm run copy-sw && vite",
+    "build": "npm run copy-sw && vite build",
+    "preview": "npm run copy-sw && vite preview",
+    "prepare-demo": "node prepare-site.js && echo 'deprecated - use audio-tour-player-example instead'",
+    "copy-sw": "echo '// DO NOT EDIT THIS COPY OF sw.js' | cat - sw.js > public/sw.js"
   },
   "devDependencies": {
     "vite": "^8.0.0"

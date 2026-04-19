@@ -10,7 +10,8 @@ class AudioTourPlayer extends HTMLElement {
         // State
         this.tourData = null;
         this.currentIndex = 0;
-        this.cacheName = 'celtic-tour-v1';
+        this.cacheName = this.getAttribute('cache-name') || 'audio-tour-player-cache-v1';
+        console.log(CONSOLE_PREFIX + "Using cache name:", this.cacheName);
         this.isOfflineReady = false;
 
         // SVG icons
@@ -53,7 +54,10 @@ class AudioTourPlayer extends HTMLElement {
         if ('serviceWorker' in navigator) {
             console.log(CONSOLE_PREFIX + "Service Worker supported. Registering...");
             try {
-                const registration = await navigator.serviceWorker.register(swPath, { scope: './' });
+                const params = new URLSearchParams({ cacheName: this.cacheName });
+                const registration = await navigator.serviceWorker.register(`${swPath}?${params}`, {
+                    scope: './'
+                });
                 console.log(CONSOLE_PREFIX + "Service Worker offline mode enabled.");
                 registration.update();
                 return registration;
@@ -508,7 +512,7 @@ class AudioTourPlayer extends HTMLElement {
 
         btn.style.background = `linear-gradient(to right, #2e7d32 ${percent}%, #333 ${percent}%)`;
         if (percent < 100) {
-            btn.innerHTML = `Downloading ${percent}%`;
+            btn.innerHTML = `Downloaded ${percent}%`;
         } else {
             btn.innerHTML = `✓ Offline Ready`;
             btn.disabled = false;
