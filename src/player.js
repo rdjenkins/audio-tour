@@ -93,7 +93,7 @@ class AudioTourPlayer extends HTMLElement {
 
         this.enableOffline();
 
-        const tourPath = this.getAttribute('src');// || './tours/st-nuns.json';
+        const tourPath = this.getAttribute('src') || './tours/st-nuns.json'; // provide something for developers
         console.log(CONSOLE_PREFIX + "tourpath = ", tourPath)
         this.initTour(tourPath);
     }
