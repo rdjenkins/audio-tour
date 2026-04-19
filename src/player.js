@@ -12,6 +12,9 @@ class AudioTourPlayer extends HTMLElement {
         this.currentIndex = 0;
         this.cacheName = this.getAttribute('cache-name') || 'audio-tour-player-cache-v1';
         console.log(CONSOLE_PREFIX + "Using cache name:", this.cacheName);
+        this.environment = this.getAttribute('environment') || 'browser';
+        this.showOffline = (this.getAttribute('offline-capable') === 'false') ? false : true; // assume we want to show the download for offline button
+        console.log(CONSOLE_PREFIX + "Offline capable:", this.showOffline);
         this.isOfflineReady = false;
 
         // SVG icons
@@ -50,24 +53,37 @@ class AudioTourPlayer extends HTMLElement {
     }
 
     async enableOffline(swPath = 'sw.js') {
-        console.log(CONSOLE_PREFIX + "Checking for Service Worker support...");
-        if ('serviceWorker' in navigator) {
-            console.log(CONSOLE_PREFIX + "Service Worker supported. Registering...");
-            try {
-                const params = new URLSearchParams({ cacheName: this.cacheName });
-                const registration = await navigator.serviceWorker.register(`${swPath}?${params}`, {
-                    scope: './'
-                });
-                console.log(CONSOLE_PREFIX + "Service Worker offline mode enabled.");
-                registration.update();
-                return registration;
-            } catch (error) {
-                console.error(CONSOLE_PREFIX + "Service Worker failed:", error);
-                throw error;
+
+        // Standard environment of a browser accessing a website
+        // where service workers will probably work
+        if (this.environment === 'browser') {
+            console.log(CONSOLE_PREFIX + "Environment: browser");
+            console.log(CONSOLE_PREFIX + "Checking for Service Worker support...");
+            if ('serviceWorker' in navigator) {
+                console.log(CONSOLE_PREFIX + "Service Worker supported. Registering...");
+                try {
+                    const params = new URLSearchParams({ cacheName: this.cacheName });
+                    const registration = await navigator.serviceWorker.register(`${swPath}?${params}`, {
+                        scope: './'
+                    });
+                    console.log(CONSOLE_PREFIX + "Service Worker offline mode enabled.");
+                    registration.update();
+                    return registration;
+                } catch (error) {
+                    console.error(CONSOLE_PREFIX + "Service Worker failed:", error);
+                    throw error;
+                }
+            } else {
+                console.warn(CONSOLE_PREFIX + "Browser does not support Service Workers.");
+                return Promise.reject("Not supported");
             }
-        } else {
-            console.warn(CONSOLE_PREFIX + "Browser does not support Service Workers.");
-            return Promise.reject("Not supported");
+        }
+
+        // we could use a way of testing if we are running in a capacitor app or not
+        // but for the meantime we'll assume that those using it in a capacitor app
+        // will set the attribute environment="Capacitor"
+        if (this.environment === 'Capacitor') {
+            console.log(CONSOLE_PREFIX + "Environment: Capacitor")
         }
     }
 
@@ -297,41 +313,43 @@ class AudioTourPlayer extends HTMLElement {
         // If we are on the Home/Menu page (index 0), build the buttons
         if (index === 0) {
 
-            const downloadBtn = document.createElement("button");
-            downloadBtn.id = "download-btn";
-            downloadBtn.className = "menu-stop-btn download-main";
-            downloadBtn.innerHTML = `${this.downloadIcon} Checking status...`;
-            menuContainer.appendChild(downloadBtn);
+            if (this.showOffline === true) { // show the download button and enable access cache functions
+                const downloadBtn = document.createElement("button");
+                downloadBtn.id = "download-btn";
+                downloadBtn.className = "menu-stop-btn download-main";
+                downloadBtn.innerHTML = `${this.downloadIcon} Checking status...`;
+                menuContainer.appendChild(downloadBtn);
+    
+                this.getCacheStatus().then(status => {
+                    if (status.error === 'Insecure Context') {
+                        downloadBtn.innerHTML = "Offline Not Supported (Insecure)";
+                        downloadBtn.disabled = true;
+                        downloadBtn.style.opacity = "0.5";
+                        return;
+                    }
+                    if (status.isComplete) {
+                        // Already fully downloaded
+                        this.updateDownloadUI(100);
+                        this.isOfflineReady = true;
+                    } else if (status.found > 0) {
+                        // Partially downloaded (e.g. 40%)
+                        this.updateDownloadUI(status.percent);
+                    } else {
+                        // Nothing downloaded yet
+                        downloadBtn.innerHTML = `${this.downloadIcon} Download for Offline Use`;
+                    }
+                });
 
-            this.getCacheStatus().then(status => {
-                if (status.error === 'Insecure Context') {
-                    downloadBtn.innerHTML = "Offline Not Supported (Insecure)";
-                    downloadBtn.disabled = true;
-                    downloadBtn.style.opacity = "0.5";
-                    return;
+                downloadBtn.onclick = () => {
+                    if (this.isOfflineReady) {
+                        // If it's already downloaded, the click means "Manage/Delete"
+                        this.clearOfflineData();
+                    } else {
+                        // If it's not downloaded, the click starts the download
+                        this.preloadTourAssets();
+                    }
                 }
-                if (status.isComplete) {
-                    // Already fully downloaded
-                    this.updateDownloadUI(100);
-                    this.isOfflineReady = true;
-                } else if (status.found > 0) {
-                    // Partially downloaded (e.g. 40%)
-                    this.updateDownloadUI(status.percent);
-                } else {
-                    // Nothing downloaded yet
-                    downloadBtn.innerHTML = `${this.downloadIcon} Download for Offline Use`;
-                }
-            });
-
-            downloadBtn.onclick = () => {
-                if (this.isOfflineReady) {
-                    // If it's already downloaded, the click means "Manage/Delete"
-                    this.clearOfflineData();
-                } else {
-                    // If it's not downloaded, the click starts the download
-                    this.preloadTourAssets();
-                }
-            }
+           }
 
             const stops = this.tourData.slice(1).map((stopData, idx) => ({
                 title: stopData.title,

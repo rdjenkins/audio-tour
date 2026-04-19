@@ -49,13 +49,30 @@ Use the custom element to display the tour. Pass your specific tour URL.
 <audio-tour-player src="./tours/my-tour.json"></audio-tour-player>
 ```
 
-You can optionally define a specific cache name. e.g.
+You can optionally define other features:
+
+offline-capable - true (default) / false
+
+cache-name - any string
+
+environment - browser (default) / Capacitor (a work in progress)
 
 ```
-<audio-tour-player src="./tours/my-tour.json" cache-name="cqp1"></audio-tour-player>
+<audio-tour-player 
+    src="./tours/my-tour.json"
+    offline-capable="true"
+    cache-name="cqp1"
+    environment="browser"
+    >
+</audio-tour-player>
 ```
 
 The default cache name is "audio-tour-player-cache-v1".
+
+Setting to browser environment will use the service worker (see Offline support below) and the Cache API for offline storage.
+
+Setting to Capacitor environment will not use a service worker (as they don't work inside a Capacitor app). We are exploring what to build for our App that uses this package (but without having to fork it).
+
 
 ### Create your my-tour.json
 

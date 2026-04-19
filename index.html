@@ -8,7 +8,13 @@
 </head>
 
 <body>
-    <audio-tour-player src="https://celticquietplaces.com/server/tourguide.php?id=1" cache-name="cqp1"></audio-tour-player>
+    <audio-tour-player 
+        src="https://celticquietplaces.com/server/tourguide.php?id=1"
+        offline-capable="true"
+        cache-name="cqp1"
+        environment="browser"
+        >
+    </audio-tour-player>
 
     <script type="module" src="./src/player.js"></script>
 </body>
