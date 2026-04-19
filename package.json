@@ -30,7 +30,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "prepare-demo": "node prepare-site.js"
+    "prepare-demo": "node prepare-site.js && echo 'deprecated - use audio-tour-player-example instead'"
   },
   "devDependencies": {
     "vite": "^8.0.0"
