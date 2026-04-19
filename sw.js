@@ -1,4 +1,11 @@
-// sw.js
+/**
+ * Service worker for audio-tour-player
+ * Place in your root or public folder as sw.js
+ * It will be registered by the player and will cache the player library and tour data for offline use.
+ * You can customize the caching strategy here if needed.
+ * By default, it will cache all GET requests and serve from cache when offline.
+ */
+
 const CACHE_NAME = 'celtic-tour-v1';
 
 self.addEventListener('install', (e) => self.skipWaiting());
