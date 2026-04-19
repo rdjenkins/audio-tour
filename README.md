@@ -2,18 +2,18 @@
 
 We needed to deliver offline-capable audio tours for 100+ venues in rural Cornwall so just built our own library. It could be useful for your project as it handles the audio controls, and extras such as caching and touch gestures so you can focus on the content.
 
-[![npm version](https://img.shields.io/npm/v/audio-tour-player)](https://www.npmjs.com/package/audio-tour-player) 
+[![npm version](https://img.shields.io/npm/v/audio-tour-player)](https://www.npmjs.com/package/audio-tour-player)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This is the audio tour software for <https://celticquietplaces.com/>.
 
 ## Features
 
-Framework Agnostic – Built with native Web Components. Seamlessly drop it into React, Vue, Svelte, or a plain HTML file without changing a line of code.
+Native Web Components – Seamlessly drop it into React, Vue, Svelte, or a plain HTML file without changing a line of code.
 
 JSON-Driven Content – Define your entire tour in a single .json file. Support for local assets or remote media URLs makes deployment a breeze.
 
-Bulletproof Offline Mode – First-class support for the Cache API and Service Workers. Your users can download tours and explore with zero signal.
+Excellent Offline Mode – Supports for the Cache API using a Service Workers. Your users can download tours and then explore with zero signal. This works great for websites but NOT for within apps such those using Capacitor.
 
 Ultra Lightweight – Fast load times and a tiny bundle footprint.
 
@@ -47,12 +47,6 @@ Use the custom element to display the tour. You can pass a specific tour URL.
 
 ```
 <audio-tour-player src="./tours/my-tour.json"></audio-tour-player>
-
-<script type="module">
-  // (Optional) Enable offline support if using the provided sw.js
-  const player = document.querySelector('audio-tour-player');
-  player.enableOffline();
-</script>
 ```
 
 ### Create your my-tour.json
@@ -79,13 +73,7 @@ The tour is controlled by a simple JSON file. If youbare going to work cross-ori
 
 ### Offline Support
 
-To enable offline caching, ensure the service worker `sw.js` is in the root of your project and call:
-
-```
-javascript
-const player = document.querySelector('audio-tour-player');
-player.enableOffline();
-```
+To enable offline caching, ensure the service worker `sw.js` is in the root of your project.
 
 (see 'Add the player to your HTML' section above)
 
@@ -101,32 +89,6 @@ project-root/
 ├── images/
 └── audio/
 ```
-
-## Vite / React / Svelt build frameworks
-
-Using a bundler? Import the package in your main JS entry point instead.
-
-e.g. main.js
-
-```
-import 'audio-tour-player';
-
-const initPlayer = () => {
-  const player = document.querySelector('audio-tour-player');
-  
-  if (player) {
-    player.enableOffline();
-    console.log("Tour player ready and offline mode enabled.");
-  }
-};
-
-if (customElements.get('audio-tour-player')) {
-  initPlayer();
-} else {
-  customElements.whenDefined('audio-tour-player').then(initPlayer);
-}
-```
-
 
 ## License
 

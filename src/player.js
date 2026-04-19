@@ -1,5 +1,7 @@
 import playerStyles from "./style.css?inline";
 
+const CONSOLE_PREFIX = "audio-tour-player: "
+
 class AudioTourPlayer extends HTMLElement {
     constructor() {
         super();
@@ -47,18 +49,20 @@ class AudioTourPlayer extends HTMLElement {
     }
 
     async enableOffline(swPath = 'sw.js') {
+        console.log(CONSOLE_PREFIX + "Checking for Service Worker support...");
         if ('serviceWorker' in navigator) {
+            console.log(CONSOLE_PREFIX + "Service Worker supported. Registering...");
             try {
                 const registration = await navigator.serviceWorker.register(swPath, { scope: './' });
-                console.log('AudioTour: Offline mode enabled.');
+                console.log(CONSOLE_PREFIX + "Service Worker offline mode enabled.");
                 registration.update();
                 return registration;
             } catch (error) {
-                console.error('AudioTour: Service Worker failed:', error);
+                console.error(CONSOLE_PREFIX + "Service Worker failed:", error);
                 throw error;
             }
         } else {
-            console.warn("AudioTour: Browser does not support Service Workers.");
+            console.warn(CONSOLE_PREFIX + "Browser does not support Service Workers.");
             return Promise.reject("Not supported");
         }
     }
@@ -69,8 +73,8 @@ class AudioTourPlayer extends HTMLElement {
 
         this.enableOffline();
 
-        const tourPath = this.getAttribute('src') || './tours/tour.json';
-        console.log("tourpath = ", tourPath)
+        const tourPath = this.getAttribute('src');// || './tours/st-nuns.json';
+        console.log(CONSOLE_PREFIX + "tourpath = ", tourPath)
         this.initTour(tourPath);
     }
 
@@ -128,7 +132,7 @@ class AudioTourPlayer extends HTMLElement {
                     listenBtn.innerHTML = this.pauseIcon;
                     headphones.classList.add("playing");
                 } catch (error) {
-                    console.error("Error playing audio:", error);
+                    console.error(CONSOLE_PREFIX + "Error playing audio:", error);
                     listenBtn.innerHTML = this.playIcon;
                     headphones.classList.remove("playing");
                 }
@@ -183,7 +187,7 @@ class AudioTourPlayer extends HTMLElement {
 
         // Show loading state when audio is fetching data
         voice.addEventListener("waiting", () => {
-            console.log("audio buffering");
+            console.log(CONSOLE_PREFIX + "audio buffering");
             headphones.classList.add("buffering");
         });
 
@@ -255,11 +259,11 @@ class AudioTourPlayer extends HTMLElement {
             this.tourData = data.stops;
             this.renderStop(0);
         } catch (error) {
-            console.error("Error loading tour:", error);
-            this.shadowRoot.getElementById("desc").innerText = "Sorry. No tour available at '" + jsonPath + "'";
-            console.log("Sorry. No tour available at '" + jsonPath + "'. " +
-                "Check that your <audio-tour-player> tag has a src attribute pointing to a valid tour JSON file, " +
-                "and that the file is properly formatted.");
+            console.error(CONSOLE_PREFIX + "Error loading tour:", error);
+            const wrappedPath = jsonPath.replace(/\//g, '/<wbr>');
+            this.shadowRoot.getElementById("desc").innerHTML = "Sorry. No tour available at '" + wrappedPath + "'. " +
+                "Check that your &lt;audio-tour-player&gt; tag has a src attribute pointing to a valid tour JSON file, " +
+                "and that the file is properly formatted.";
             this.shadowRoot.querySelector(".buttons").style.display = "none";
         }
     }
@@ -491,7 +495,7 @@ class AudioTourPlayer extends HTMLElement {
                 const progress = Math.round((completed / urls.length) * 100);
                 this.updateDownloadUI(progress);
             } catch (err) {
-                console.error(`Failed to cache: ${url}`, err);
+                console.error(CONSOLE_PREFIX + `Failed to cache: ${url}`, err);
             }
         }
         this.isOfflineReady = true;
@@ -523,9 +527,9 @@ class AudioTourPlayer extends HTMLElement {
                 this.isOfflineReady = false;
                 this.renderStop(0);
 
-                console.log("Offline data cleared.");
+                console.log(CONSOLE_PREFIX + "Offline data cleared.");
             } catch (error) {
-                console.error("Failed to clear cache:", error);
+                console.error(CONSOLE_PREFIX + "Failed to clear cache:", error);
             }
         }
     }
