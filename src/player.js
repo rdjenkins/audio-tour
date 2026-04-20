@@ -10,6 +10,7 @@ class AudioTourPlayer extends HTMLElement {
         // State
         this.tourData = null;
         this.currentIndex = 0;
+        this.tourPath = this.getAttribute('src') || './tours/st-nuns.json'; // provide something for developers
         this.cacheName = this.getAttribute('cache-name') || 'audio-tour-player-cache-v1';
         console.log(CONSOLE_PREFIX + "Using cache name:", this.cacheName);
         this.environment = this.getAttribute('environment') || 'browser';
@@ -138,9 +139,8 @@ class AudioTourPlayer extends HTMLElement {
 
         this.enableOffline();
 
-        const tourPath = this.getAttribute('src') || './tours/st-nuns.json'; // provide something for developers
-        console.log(CONSOLE_PREFIX + "tourpath = ", tourPath)
-        this.initTour(tourPath);
+        console.log(CONSOLE_PREFIX + "tourpath = ", this.tourPath)
+        this.initTour(this.tourPath);
     }
 
     render() {
@@ -515,6 +515,7 @@ class AudioTourPlayer extends HTMLElement {
         const urls = new Set();
         urls.add('./');
         urls.add('sw.js');
+        urls.add(this.tourPath);
         this.tourData.forEach(stop => {
             if (stop.audio) urls.add(stop.audio);
             if (stop.image) urls.add(stop.image);
