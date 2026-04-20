@@ -16,6 +16,9 @@ class AudioTourPlayer extends HTMLElement {
         this.showOffline = (this.getAttribute('offline-capable') === 'false') ? false : true; // assume we want to show the download for offline button
         console.log(CONSOLE_PREFIX + "Offline capable:", this.showOffline);
         this.isOfflineReady = false;
+        // storage interface
+        this.storage = this.getBrowserStorage(); // Default to browser
+        this.urlRewriter = (url) => url; // Default: do nothing
 
         // SVG icons
         this.playIcon = `
@@ -81,10 +84,47 @@ class AudioTourPlayer extends HTMLElement {
 
         // we could use a way of testing if we are running in a capacitor app or not
         // but for the meantime we'll assume that those using it in a capacitor app
-        // will set the attribute environment="Capacitor"
-        if (this.environment === 'Capacitor') {
-            console.log(CONSOLE_PREFIX + "Environment: Capacitor")
+        // will set the attribute environment="capacitor"
+        if (this.environment === 'capacitor') {
+            console.log(CONSOLE_PREFIX + "Environment: capacitor - Waiting for storage provider.");
+            // We don't register a SW here; we assume the capacitor app 
+            // will provide a custom this.storage implementation.
         }
+    }
+
+    /** * Storage interface
+     * Default Browser implementation 
+     */
+    getBrowserStorage() {
+        return {
+            getStatus: async (urls, cacheName) => {
+                if (!('caches' in window)) return { percent: 0, isComplete: false, error: 'Insecure Context' };
+                const cache = await caches.open(cacheName);
+                let foundCount = 0;
+                for (const url of urls) {
+                    if (await cache.match(url)) foundCount++;
+                }
+                return {
+                    percent: Math.round((foundCount / urls.length) * 100),
+                    isComplete: foundCount === urls.length,
+                    found: foundCount
+                };
+            },
+            preload: async (urls, cacheName, onProgress) => {
+                const cache = await caches.open(cacheName);
+                let completed = 0;
+                for (const url of urls) {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Network fail');
+                    await cache.put(url, response);
+                    completed++;
+                    onProgress(Math.round((completed / urls.length) * 100));
+                }
+            },
+            clear: async (cacheName) => {
+                return await window.caches.delete(cacheName);
+            }
+        };
     }
 
     connectedCallback() {
@@ -405,10 +445,15 @@ class AudioTourPlayer extends HTMLElement {
         const isSupportedAudio = /\.(mp3|ogg|wav)$/i.test(stop.audio);
 
         if (isSupportedAudio) {
+            console.log(CONSOLE_PREFIX + "Supported audio found: ", stop.audio)
             controls.style.display = "flex";
             progressBar.style.display = "block";
-            voice.src = stop.audio;
-            voice.load(); // Force load the track
+            voice.src = this.urlRewriter(stop.audio);
+            try {
+                voice.load(); // Force load the track
+            } catch (error) {
+                console.error(CONSOLE_PREFIX + "Error loading audio", error)
+            }
         } else {
             controls.style.display = "none";
             progressBar.style.display = "none";
@@ -474,54 +519,50 @@ class AudioTourPlayer extends HTMLElement {
         return Array.from(urls);
     }
 
+    /** Storage utilities
+     * getCacheStatus(), preloadTourAssets(), clearOfflineData()
+     * Notes:
+     * this.storage defaults to getBrowserStorage() that uses Cache API and a Storage Worker
+     * For other environments (such as capacitor) inject a different storage function
+     *  - provide for getStatus, preload, and clear
+     * See README for an example (TBD)
+    */
+
     async getCacheStatus() {
-        if (!('caches' in window)) {
-            return { percent: 0, isComplete: false, error: 'Insecure Context' };
-        }
         const required = this.getRequiredUrls();
         if (required.length === 0) return { percent: 0, isComplete: false };
-
-        const cache = await caches.open(this.cacheName);
-        let foundCount = 0;
-
-        for (const url of required) {
-            const match = await cache.match(url);
-            if (match) foundCount++;
-        }
-
-        return {
-            percent: Math.round((foundCount / required.length) * 100),
-            isComplete: foundCount === required.length,
-            total: required.length,
-            found: foundCount
-        };
+        return await this.storage.getStatus(required, this.cacheName);
     }
 
     async preloadTourAssets() {
         const btn = this.shadowRoot.getElementById("download-btn");
         const urls = this.getRequiredUrls();
-        const cache = await caches.open(this.cacheName);
-
         btn.disabled = true;
-        let completed = 0;
 
-        for (const url of urls) {
+        try {
+            await this.storage.preload(urls, this.cacheName, (percent) => {
+                this.updateDownloadUI(percent);
+            });
+            this.isOfflineReady = true;
+        } catch (err) {
+            console.error(CONSOLE_PREFIX + "Preload failed", err);
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    async clearOfflineData() {
+        const confirmed = window.confirm("Would you like to remove the offline files to save space?");
+        if (confirmed) {
             try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Network response was not ok');
-
-                await cache.put(url, response);
-                completed++;
-
-                // Update the progress bar visually
-                const progress = Math.round((completed / urls.length) * 100);
-                this.updateDownloadUI(progress);
-            } catch (err) {
-                console.error(CONSOLE_PREFIX + `Failed to cache: ${url}`, err);
+                await this.storage.clear(this.cacheName);
+                this.isOfflineReady = false;
+                this.renderStop(0);
+                console.log(CONSOLE_PREFIX + "Offline data cleared.");
+            } catch (error) {
+                console.error(CONSOLE_PREFIX + "Failed to clear cache:", error);
             }
         }
-        this.isOfflineReady = true;
-        btn.disabled = false;
     }
 
     updateDownloadUI(percent) {
@@ -535,24 +576,6 @@ class AudioTourPlayer extends HTMLElement {
             btn.innerHTML = `✓ Offline Ready`;
             btn.disabled = false;
             btn.style.cursor = "pointer";
-        }
-    }
-
-    async clearOfflineData() {
-
-        const confirmed = window.confirm("Would you like to remove the offline files to save space?");
-
-        if (confirmed) {
-            try {
-                await window.caches.delete(this.cacheName);
-
-                this.isOfflineReady = false;
-                this.renderStop(0);
-
-                console.log(CONSOLE_PREFIX + "Offline data cleared.");
-            } catch (error) {
-                console.error(CONSOLE_PREFIX + "Failed to clear cache:", error);
-            }
         }
     }
 

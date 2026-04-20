@@ -13,7 +13,7 @@ Native Web Components – Seamlessly drop it into React, Vue, Svelte, or a plain
 
 JSON-Driven Content – Define your entire tour in a single .json file. Support for local assets or remote media URLs makes deployment a breeze.
 
-Excellent Offline Mode – Supports for the Cache API using a Service Workers. Your users can download tours and then explore with zero signal. This works great for websites but NOT for within apps such those using Capacitor.
+Storage interface – Supports the Cache API using a Service Worker. Your users can download tours and then explore with zero signal. The built-in default is for browsers so works great for websites but NOT for within apps such those using capacitor. For capacitor (like us) you need to inject a new storage function (see example below).
 
 Ultra Lightweight – Fast load times and a tiny bundle footprint.
 
@@ -55,7 +55,7 @@ offline-capable - true (default) / false
 
 cache-name - any string
 
-environment - browser (default) / Capacitor (a work in progress)
+environment - browser (default) / capacitor (a work in progress)
 
 ```
 <audio-tour-player 
@@ -71,7 +71,7 @@ The default cache name is "audio-tour-player-cache-v1".
 
 Setting to browser environment will use the service worker (see Offline support below) and the Cache API for offline storage.
 
-Setting to Capacitor environment will not use a service worker (as they don't work inside a Capacitor app). We are exploring what to build for our App that uses this package (but without having to fork it).
+Setting to capacitor environment will not use a service worker (as they don't work inside a capacitor app). We are exploring what to build for our App that uses this package (but without having to fork it).
 
 
 ### Create your my-tour.json
@@ -100,7 +100,38 @@ The tour is controlled by a simple JSON file. If youbare going to work cross-ori
 
 To enable offline caching, ensure the service worker `sw.js` is in the root of your project (or in your public/ folder depending on your build tool). You can copy the `sw.js` file from node_modules/audio-tour-player/sw.js
 
-Offline support with a service worker only functions within a client's browser. They will need to visit the page and click the 'Download for offline use' button.
+The default offline support with a service worker only functions within a client's browser. They visit the audio tour and click the 'Download for offline use' button and then the files are available (as long as the service worker keeps running). Service workers may stop running if not used.
+
+#### Injecting a new storage
+
+For capacitor you need to inject new functionality for storage after initiating the player. We use our own functions based on @capacitor/filesytem
+
+e.g.
+
+```
+const player = document.querySelector('audio-tour-player');
+
+// Inject capacitor-specific logic
+player.storage = {
+    getStatus: async (urls, cacheName) => {
+        // Use your "fetchandstore.js" logic here to check 
+        // if files exist in capacitor.filesystem
+        const exists = await myCapacitorUtils.checkFilesExist(urls); 
+        return { 
+            percent: exists ? 100 : 0, 
+            isComplete: exists 
+        };
+    },
+    preload: async (urls, cacheName, onProgress) => {
+        // Trigger your capacitor download/storage logic
+        await myCapacitorUtils.downloadAndSave(urls, (p) => onProgress(p));
+    },
+    clear: async (cacheName) => {
+        await myCapacitorUtils.deleteAllFiles();
+    }
+};
+player.urlRewriter = (url) => MyFileSystem.getUri(url);
+```
 
 ### Suggested folder structure
 
