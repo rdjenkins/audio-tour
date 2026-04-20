@@ -121,6 +121,11 @@ class AudioTourPlayer extends HTMLElement {
                     onProgress(Math.round((completed / urls.length) * 100));
                 }
             },
+            store: async (url, cacheName, response) => {
+                const cache = await caches.open(cacheName);
+                await cache.put(url, response);
+                console.log(CONSOLE_PREFIX + "stored: ", url)
+            },
             clear: async (cacheName) => {
                 return await window.caches.delete(cacheName);
             }
@@ -312,10 +317,8 @@ class AudioTourPlayer extends HTMLElement {
 
     async initTour(jsonPath) {
         try {
-            const response = await fetch(jsonPath);
-            if (!response.ok) throw new Error("Tour not found");
-
-            const data = await response.json();
+        // Use a delegate-friendly way to get the data
+        const data = await this.loadResource(jsonPath);
             this.tourData = data.stops;
             this.renderStop(0);
         } catch (error) {
@@ -563,6 +566,35 @@ class AudioTourPlayer extends HTMLElement {
                 console.error(CONSOLE_PREFIX + "Failed to clear cache:", error);
             }
         }
+    }
+
+    /**
+     * Universal loader that handles Browser vs Capacitor
+     */
+    async loadResource(path) {
+        // 1. Check if a custom loader was provided (for Capacitor Filesystem)
+        if (this.customLoader) {
+            return await this.customLoader(path);
+        }
+
+        // 2. Browser logic: Try to hit the Cache API directly first 
+        // as a fallback if the Service Worker isn't fully ready/active.
+        if ('caches' in window) {
+            const cache = await caches.open(this.cacheName);
+            const cachedResponse = await cache.match(path);
+            if (cachedResponse) {
+                console.log(CONSOLE_PREFIX + "Loading from Cache API:", path);
+                return await cachedResponse.json();
+            }
+        }
+
+        // 3. Fallback to standard fetch (which the Service Worker will intercept)
+        console.log(CONSOLE_PREFIX + "loadResource() Loading via fetch:", path);
+        const response = await fetch(path);
+        if (!response.ok) throw new Error("Resource not found");
+        console.log(CONSOLE_PREFIX + `storing ${path} to ${this.cacheName}`)
+        this.storage.store(path, this.cacheName, response.clone());
+        return await response.json();
     }
 
     updateDownloadUI(percent) {
