@@ -5,13 +5,13 @@ We needed to deliver offline-capable audio tours for 100+ venues in rural Cornwa
 [![npm version](https://img.shields.io/npm/v/audio-tour-player)](https://www.npmjs.com/package/audio-tour-player)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This is the audio tour software for <https://celticquietplaces.com/>.
+This is the audio tour software for <https://celticquietplaces.com/>
 
 ## Features
 
 Native Web Components – Seamlessly drop it into React, Vue, Svelte, or a plain HTML file without changing a line of code.
 
-JSON-Driven Content – Define your entire tour in a single .json file. Support for local assets or remote media URLs makes deployment a breeze.
+JSON-Driven Content – Define your entire tour in a single .json file. Support for local assets or remote media URLs.
 
 Storage interface – Supports the Cache API using a Service Worker. Your users can download tours and then explore with zero signal. The built-in default is for browsers so works great for websites but NOT for within apps such those using capacitor. For capacitor (like us) you need to inject a new storage function (see example below).
 
@@ -55,24 +55,18 @@ offline-capable - true (default) / false
 
 cache-name - any string
 
-environment - browser (default) / capacitor (a work in progress)
-
 ```
 <audio-tour-player 
     src="./tours/my-tour.json"
     offline-capable="true"
     cache-name="cqp1"
-    environment="browser"
     >
 </audio-tour-player>
 ```
 
 The default cache name is "audio-tour-player-cache-v1".
 
-Setting to browser environment will use the service worker (see Offline support below) and the Cache API for offline storage.
-
-Setting to capacitor environment will not use a service worker (as they don't work inside a capacitor app). We are exploring what to build for our App that uses this package (but without having to fork it).
-
+The default storage interface is for a browser environment and will use a service worker (see Offline support below) and the Cache API for offline storage.
 
 ### Create your my-tour.json
 
@@ -104,11 +98,12 @@ The default offline support with a service worker only functions within a client
 
 #### Injecting a new storage
 
-For capacitor you need to inject new functionality for storage after initiating the player. We use our own functions based on @capacitor/filesytem
+For capacitor you won't need to worry about the service worker as it won't work. However, you need to inject new functionality for storage after initiating the player. We use our own functions based on @capacitor/filesytem
 
 e.g.
 
 ```
+// excerpt from the audio tour page
 const player = document.querySelector('audio-tour-player');
 
 // Inject capacitor-specific logic
