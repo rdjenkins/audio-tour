@@ -19,7 +19,7 @@ class AudioTourPlayer extends HTMLElement {
         this.isOfflineReady = false;
         // storage interface
         this.storage = this.getBrowserStorage(); // Default to browser
-        this.urlRewriter = (url) => url; // Default: do nothing
+        this.urlRewriter = async (url) => url; // Default: do nothing
 
         // SVG icons
         this.playIcon = `
@@ -434,9 +434,11 @@ class AudioTourPlayer extends HTMLElement {
         // Update Background Image
         const container = s.getElementById("main-container");
         if (stop.image) {
-            container.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url(${stop.image})`;
+            this.urlRewriter(stop.image).then(finalImageUrl => {
+                container.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url(${finalImageUrl})`;
             container.style.backgroundSize = "cover";
             container.style.backgroundPosition = "center";
+            });
         } else {
             container.style.backgroundImage = "none";
         }
@@ -451,12 +453,10 @@ class AudioTourPlayer extends HTMLElement {
             console.log(CONSOLE_PREFIX + "Supported audio found: ", stop.audio)
             controls.style.display = "flex";
             progressBar.style.display = "block";
-            voice.src = this.urlRewriter(stop.audio);
-            try {
-                voice.load(); // Force load the track
-            } catch (error) {
-                console.error(CONSOLE_PREFIX + "Error loading audio", error)
-            }
+            this.urlRewriter(stop.audio).then(finalAudioUrl => {
+                voice.src = finalAudioUrl;
+                voice.load();
+            });
         } else {
             controls.style.display = "none";
             progressBar.style.display = "none";
