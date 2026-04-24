@@ -75,7 +75,7 @@ class AudioTourPlayer extends HTMLElement {
                     return registration;
                 } catch (error) {
                     console.error(CONSOLE_PREFIX + "Service Worker failed:", error);
-                    throw error;
+                    //throw error;
                 }
             } else {
                 console.warn(CONSOLE_PREFIX + "Browser does not support Service Workers.");
