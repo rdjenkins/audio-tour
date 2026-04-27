@@ -5,17 +5,17 @@ We needed to deliver offline-capable audio tours for 100+ venues in rural Cornwa
 [![npm version](https://img.shields.io/npm/v/audio-tour-player)](https://www.npmjs.com/package/audio-tour-player)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This is the audio tour software for <https://celticquietplaces.com/>
+This is the audio tour software we are developing for <https://celticquietplaces.com/> (see examples below).
 
 ## Features
 
-Native Web Components – Seamlessly drop it into React, Vue, Svelte, or a plain HTML file without changing a line of code.
+Native Web Components – Works in React, Vue, Svelte, or a plain HTML file.
 
-JSON-Driven Content – Define your entire tour in a single .json file. Support for local assets or remote media URLs.
+JSON-Driven Content – Tours defined in a single .json file. Support for local media or remote URLs.
 
 Storage interface – Supports the Cache API using a Service Worker. Your users can download tours and then explore with zero signal. The built-in default is for browsers so works great for websites but NOT for within apps such those using capacitor. For capacitor (like us) you need to inject a new storage function (see example below).
 
-Ultra Lightweight – Fast load times and a tiny bundle footprint.
+Lightweight – Tiny bundle footprint.
 
 Whole page experience - full page portrait images (on mobiles) with audio controls.
 
@@ -100,32 +100,27 @@ The default offline support with a service worker only functions within a client
 
 For capacitor you won't need to worry about the service worker as it won't work. However, you need to inject new functionality for storage after initiating the player. We use our own functions based on @capacitor/filesytem
 
+See [audio-tour-player-capacitor-example](https://github.com/rdjenkins/audio-tour-player-capacitor-example) for a working example.
+
 e.g.
 
 ```
-// excerpt from the audio tour page
-const player = document.querySelector('audio-tour-player');
+import 'audio-tour-player'
+import { capacitorStorageDelegate, capacitorUrlRewriter } from './capacitor-bridge.js';
 
-// Inject capacitor-specific logic
-player.storage = {
-    getStatus: async (urls, cacheName) => {
-        // Use your "fetchandstore.js" logic here to check 
-        // if files exist in capacitor.filesystem
-        const exists = await myCapacitorUtils.checkFilesExist(urls); 
-        return { 
-            percent: exists ? 100 : 0, 
-            isComplete: exists 
-        };
-    },
-    preload: async (urls, cacheName, onProgress) => {
-        // Trigger your capacitor download/storage logic
-        await myCapacitorUtils.downloadAndSave(urls, (p) => onProgress(p));
-    },
-    clear: async (cacheName) => {
-        await myCapacitorUtils.deleteAllFiles();
-    }
-};
-player.urlRewriter = (url) => MyFileSystem.getUri(url);
+
+// Wait for the DOM to be ready and initiate the player
+document.addEventListener('DOMContentLoaded', () => {
+  const player = document.querySelector('audio-tour-player');
+
+  if (player.attributes.src) {
+    console.log('Audio Player present and src attribute is set.');
+  }
+
+  // Inject the Capacitor logic
+  player.storage = capacitorStorageDelegate;
+  player.urlRewriter = capacitorUrlRewriter;
+});
 ```
 
 ### Suggested folder structure
