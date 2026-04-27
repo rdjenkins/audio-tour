@@ -139,8 +139,12 @@ class AudioTourPlayer extends HTMLElement {
 
         this.enableOffline();
 
-        console.log(CONSOLE_PREFIX + "tourpath = ", this.tourPath)
+if (this.tourPath) {
+        console.log(CONSOLE_PREFIX + "Initializing with path:", this.tourPath);
         this.initTour(this.tourPath);
+    } else {
+        console.log(CONSOLE_PREFIX + "Waiting for src attribute...");
+    }
     }
 
     render() {
@@ -316,6 +320,12 @@ class AudioTourPlayer extends HTMLElement {
     }
 
     async initTour(jsonPath) {
+        this.tourData = null;
+        this.currentIndex = 0;
+        this.resetAudioUI();
+        const voice = this.shadowRoot.getElementById("voice");
+        if (voice) voice.pause();
+
         try {
         // Use a delegate-friendly way to get the data
         const data = await this.loadResource(jsonPath);
@@ -470,11 +480,14 @@ class AudioTourPlayer extends HTMLElement {
         const s = this.shadowRoot;
         const progressBar = s.getElementById("progressBar");
 
-        progressBar.value = 0;
-        progressBar.style.background = `linear-gradient(to right, #ff9800 0%, rgba(255, 255, 255, 0.3) 0%)`;
-
-        s.getElementById("listenBtn").innerHTML = this.playIcon;
-        s.getElementById("headphones").classList.remove("playing");
+        if (progressBar) {
+            progressBar.value = 0;
+            progressBar.style.background = `linear-gradient(to right, #ff9800 0%, rgba(255, 255, 255, 0.3) 0%)`;
+        }
+            const listenBtn = s.getElementById("listenBtn");
+            const headphones = s.getElementById("headphones");
+            if (listenBtn) listenBtn.innerHTML = this.playIcon;
+            if (headphones) headphones.classList.remove("playing");
     }
 
     renderNav(index) {
@@ -611,6 +624,23 @@ class AudioTourPlayer extends HTMLElement {
             btn.style.cursor = "pointer";
         }
     }
+
+static get observedAttributes() {
+    return ['src'];
+}
+
+attributeChangedCallback(name, oldValue, newValue) {
+    // If the src changed and it's not null/empty
+    if (name === 'src' && newValue && oldValue !== newValue) {
+        this.tourPath = newValue;
+        
+        // Only trigger init if the component is actually in the DOM
+        if (this.isConnected) {
+            console.log(CONSOLE_PREFIX + "Source updated to:", newValue);
+            this.initTour(newValue);
+        }
+    }
+}
 
 }
 
