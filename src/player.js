@@ -74,8 +74,12 @@ class AudioTourPlayer extends HTMLElement {
                     registration.update();
                     return registration;
                 } catch (error) {
-                    console.error(CONSOLE_PREFIX + "Service Worker failed:", error);
-                    //throw error;
+                    console.log(CONSOLE_PREFIX + "Service Worker registration failed:", error);
+                    const swResponse = await fetch(swPath);
+                    if (!swResponse.ok) {
+                        console.warn(CONSOLE_PREFIX + `Service Worker '${swPath}' not found`);
+                        return Promise.reject("Service Worker path not found");
+                    }
                 }
             } else {
                 console.warn(CONSOLE_PREFIX + "Browser does not support Service Workers.");
@@ -127,8 +131,16 @@ class AudioTourPlayer extends HTMLElement {
                 await cache.put(url, response);
                 console.log(CONSOLE_PREFIX + "stored: ", url)
             },
-            clear: async (cacheName) => {
-                return await window.caches.delete(cacheName);
+            clear: async (cacheName, urls) => {
+                const cache = await caches.open(cacheName);
+                if (urls === null) {
+                    return await window.caches.delete(cacheName);
+                } else {
+                    for (const url of urls) {
+                        await cache.delete(url);
+                    }
+                    return true;
+                }
             }
         };
     }
@@ -572,7 +584,7 @@ if (this.tourPath) {
         const confirmed = window.confirm("Would you like to remove the offline files to save space?");
         if (confirmed) {
             try {
-                await this.storage.clear(this.cacheName);
+                await this.storage.clear(this.cacheName, this.getRequiredUrls());
                 this.isOfflineReady = false;
                 this.renderStop(0);
                 console.log(CONSOLE_PREFIX + "Offline data cleared.");
