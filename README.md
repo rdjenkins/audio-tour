@@ -70,7 +70,7 @@ The default storage interface is for a browser environment and will use a servic
 
 ### Create your my-tour.json
 
-The tour is controlled by a simple JSON file. If youbare going to work cross-origin (storing media and you json file on different domain) then remember to set CORS on that server. Each "stop" supports a title, description, background image, and an audio track.
+The tour is controlled by a simple JSON file. If you are going to work cross-origin (storing media and your json file is on different domain) then remember to set CORS on that server. Each "stop" supports a title, description, background image, and an audio track.
 
 ```
 {
@@ -98,7 +98,7 @@ The default offline support with a service worker only functions within a client
 
 #### Injecting a new storage
 
-For capacitor you won't need to worry about the service worker as it won't work. However, you need to inject new functionality for storage after initiating the player. We use our own functions based on @capacitor/filesytem
+For capacitor you won't need to worry about the service worker as it won't work inside a native app. However, you can inject new functionality for storage after initiating the player. We use our own functions based on @capacitor/filesytem
 
 See [audio-tour-player-capacitor-example](https://github.com/rdjenkins/audio-tour-player-capacitor-example) for a working example.
 
