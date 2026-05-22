@@ -17,7 +17,7 @@ Storage interface – Supports the Cache API using a Service Worker. Your users 
 
 Lightweight – Tiny bundle footprint.
 
-Whole page experience - full page portrait images (on mobiles) with audio controls.
+Whole page experience - full page portrait images (on mobiles and tablets) with audio controls. The max page width is set at 768px so it appears full width on mobiles and most tablets, but still looks OK on desktops.
 
 Native-Feel Interactions – Includes smooth touch gestures, swipe navigation, and high-performance SVG animations for a premium app feel. Check out the spinning headphones.
 
