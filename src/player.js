@@ -387,9 +387,9 @@ if (this.tourPath) {
     
                 this.getCacheStatus().then(status => {
                     if (status.error === 'Insecure Context') {
-                        downloadBtn.innerHTML = "Offline Not Supported (Insecure)";
+                        downloadBtn.innerHTML = "Offline Not Supported";
                         downloadBtn.disabled = true;
-                        downloadBtn.style.opacity = "0.5";
+                        downloadBtn.style.opacity = "0.2";
                         return;
                     }
                     if (status.isComplete) {
@@ -469,7 +469,7 @@ if (this.tourPath) {
         const progressBar = s.getElementById("progressBar");
         const voice = s.getElementById("voice");
 
-        const isSupportedAudio = /\.(mp3|ogg|wav)$/i.test(stop.audio);
+        const isSupportedAudio = /\.(mp3|ogg|wav|m4a)$/i.test(stop.audio);
 
         if (isSupportedAudio) {
             console.log(CONSOLE_PREFIX + "Supported audio found: ", stop.audio)
