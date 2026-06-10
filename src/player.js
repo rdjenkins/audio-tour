@@ -394,7 +394,9 @@ if (this.tourPath) {
     
                 this.getCacheStatus().then(status => {
                     if (status.error === 'Insecure Context') {
-                        downloadBtn.innerHTML = "Offline Not Supported";
+                        var notSupportedMessage = "Offline Not Supported";
+                        this.downloadBtnText = notSupportedMessage;
+                        downloadBtn.innerHTML = notSupportedMessage;
                         downloadBtn.disabled = true;
                         downloadBtn.style.opacity = "0.2";
                         return;
@@ -408,7 +410,9 @@ if (this.tourPath) {
                         this.updateDownloadUI(status.percent);
                     } else {
                         // Nothing downloaded yet
-                        downloadBtn.innerHTML = `${this.downloadIcon} Download for Offline Use`;
+                        var nothingMessage = `${this.downloadIcon} Download for Offline Use`;
+                        this.downloadBtnText = nothingMessage;
+                        downloadBtn.innerHTML = nothingMessage;
                     }
                 });
 
