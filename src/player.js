@@ -20,6 +20,8 @@ class AudioTourPlayer extends HTMLElement {
         // storage interface
         this.storage = this.getBrowserStorage(); // Default to browser
         this.urlRewriter = async (url) => url; // Default: do nothing
+        this.downloadBtnText = ''; // for storing the download button text for collapsing
+
 
         // SVG icons
         this.playIcon = `
@@ -382,6 +384,11 @@ if (this.tourPath) {
                 const downloadBtn = document.createElement("button");
                 downloadBtn.id = "download-btn";
                 downloadBtn.className = "menu-stop-btn download-main";
+                setTimeout(function() {
+                    this.downloadBtnText = (this.downloadBtnText === '') ? downloadBtn.innerHTML : this.downloadBtnText; // store text
+                    downloadBtn.innerHTML = `⌞ ⌝`;
+                    downloadBtn.classList.add("collapsed");
+                }, 8000); // longer first time before collapsing 
                 downloadBtn.innerHTML = `${this.downloadIcon} Checking status...`;
                 menuContainer.appendChild(downloadBtn);
     
@@ -405,13 +412,34 @@ if (this.tourPath) {
                     }
                 });
 
+                var hoverCapable = false;
+                downloadBtn.addEventListener("mouseover", () => {
+                    if (window.matchMedia("(hover: hover)").matches) {
+                        hoverCapable = true;
+                        downloadBtn.innerHTML = this.downloadBtnText;
+                        downloadBtn.classList.add("expanded");
+                        setTimeout(function() {
+                            downloadBtn.innerHTML = `⌞ ⌝`;
+                            downloadBtn.classList.remove("expanded");
+                        }, 3000);
+                    }
+                });
                 downloadBtn.onclick = () => {
-                    if (this.isOfflineReady) {
-                        // If it's already downloaded, the click means "Manage/Delete"
-                        this.clearOfflineData();
+                    if (downloadBtn.classList.contains("collapsed") && !downloadBtn.classList.contains("expanded") && !hoverCapable) {
+                        downloadBtn.innerHTML = this.downloadBtnText;
+                        downloadBtn.classList.add("expanded");
+                        setTimeout(function() {
+                            downloadBtn.innerHTML = `⌞ ⌝`;
+                            downloadBtn.classList.remove("expanded");
+                        }, 3000);
                     } else {
-                        // If it's not downloaded, the click starts the download
-                        this.preloadTourAssets();
+                        if (this.isOfflineReady) {
+                            // If it's already downloaded, the click means "Manage/Delete"
+                            this.clearOfflineData();
+                        } else {
+                            // If it's not downloaded, the click starts the download
+                            this.preloadTourAssets();
+                        }
                     }
                 }
            }
@@ -629,9 +657,21 @@ if (this.tourPath) {
 
         btn.style.background = `linear-gradient(to right, #2e7d32 ${percent}%, #333 ${percent}%)`;
         if (percent < 100) {
-            btn.innerHTML = `Downloaded ${percent}%`;
+            var percentMessage = `Downloaded ${percent}%`;
+            if (btn.classList.contains("collapsed") && !btn.classList.contains("expanded")) {
+                this.downloadBtnText = percentMessage;
+            } else {
+                this.downloadBtnText = percentMessage;
+                btn.innerHTML = percentMessage;
+            }
         } else {
-            btn.innerHTML = `✓ Offline Ready`;
+            var readyMessage = `✓ Offline Ready`;
+            if (btn.classList.contains("collapsed") && !btn.classList.contains("expanded")) {
+                this.downloadBtnText = readyMessage;
+            } else {
+                this.downloadBtnText = readyMessage;
+                btn.innerHTML = readyMessage;
+            }
             btn.disabled = false;
             btn.style.cursor = "pointer";
         }

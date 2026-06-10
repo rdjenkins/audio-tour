@@ -120,6 +120,32 @@
     background: #2e7d32;
 }
 
+#download-btn.collapsed {
+    min-width: auto;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    /* color: transparent; */
+    padding-left: 10px;
+    overflow: hidden;
+}
+
+#download-btn.collapsed svg {
+    fill: white;
+    color: white;
+    width: 20px;
+    height: 20px;
+}
+
+#download-btn.collapsed.expanded {
+    min-width: 140px;
+    width:fit-content;
+    border-radius: 20px;
+    color: white;
+    padding: 8px 12px;
+}
+
 .menu-stop-btn.download-main:disabled {
     opacity: 0.8;
     cursor: wait;
