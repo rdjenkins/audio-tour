@@ -10,3 +10,5 @@ npm login
 
 npm publish
 ```
+
+Then sync changes!
