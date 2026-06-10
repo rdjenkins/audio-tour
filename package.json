@@ -1,6 +1,6 @@
 {
   "name": "audio-tour-player",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "type": "module",
   "files": [
     "dist",
