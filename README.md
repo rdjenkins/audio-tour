@@ -1,11 +1,13 @@
 # About
 
-We needed to deliver offline-capable audio tours for 100+ venues in rural Cornwall so just built our own library. It could be useful for your project as it handles the audio controls, and extras such as caching and touch gestures so you can focus on the content.
+Offline-capable audio tour for museums / heritage locations.
+
+We needed to deliver offline-capable audio tours for 100+ venues in rural Cornwall so just built our own library. It may be useful for your project as it handles the audio controls, and extras such as caching and touch gestures so you can focus on the content.
 
 [![npm version](https://img.shields.io/npm/v/audio-tour-player)](https://www.npmjs.com/package/audio-tour-player)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This is the audio tour software we are developing for <https://celticquietplaces.com/> (see examples below).
+This is the audio tour software we are developing for <https://celticquietplaces.com/> (see [a live example](https://celticquietplaces.com/media/tour-example/)).
 
 ## Features
 
@@ -19,17 +21,15 @@ Lightweight – Tiny bundle footprint.
 
 Whole page experience - full page portrait images (on mobiles and tablets) with audio controls. The max page width is set at 768px so it appears full width on mobiles and most tablets, but still looks OK on desktops.
 
-Native-Feel Interactions – Includes smooth touch gestures, swipe navigation, and high-performance SVG animations for a premium app feel. Check out the spinning headphones.
+Native-Feel Interactions – Includes smooth touch gestures, swipe navigation, and high-performance SVG animations for a premium app feel.
 
-NPM Package: Available as a lightweight npm module. See examples [audio-tour-player-example](https://github.com/rdjenkins/audio-tour-player-example), [audio-tour-player-capacitor-example](https://github.com/rdjenkins/audio-tour-player-capacitor-example)
+NPM Package: Available as an npm module. See examples [audio-tour-player-example](https://github.com/rdjenkins/audio-tour-player-example), [audio-tour-player-capacitor-example](https://github.com/rdjenkins/audio-tour-player-capacitor-example)
 
 ## Getting started
 
 ### Installation
 
 #### Via npm
-
-Ideal for modern web projects using Vite, Webpack, or any JavaScript framework.
 
 ```
 npm install audio-tour-player
@@ -43,7 +43,7 @@ import 'audio-tour-player';
 
 ### Add the Player to your HTML
 
-Use the custom element to display the tour. Pass your specific tour URL.
+Use the custom element to display the tour. Pass your specific tour URL (can be remote).
 
 ```
 <audio-tour-player src="./tours/my-tour.json"></audio-tour-player>
@@ -67,6 +67,12 @@ cache-name - any string
 The default cache name is "audio-tour-player-cache-v1".
 
 The default storage interface is for a browser environment and will use a service worker (see Offline support below) and the Cache API for offline storage.
+
+### Audio formats
+
+MP3, OGG, WAV, M4A
+
+Note, because of the way browsers handle audio media, the filename must end with .mp3, .ogg, .wav, or .m4a for it to be playable. It took us ages to work this out! Images can be named anything but playing audio files are fussy. If you want to serve the media files dynamically - as we do - then end your dynamic URL with something that looks like a filename. e.g. mymediaserver.php?id=123&name=file.mp3
 
 ### Create your my-tour.json
 
@@ -121,19 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
   player.storage = capacitorStorageDelegate;
   player.urlRewriter = capacitorUrlRewriter;
 });
-```
-
-### Suggested folder structure
-
-```
-project-root/
-├── index.html
-├── sw.js                # Copy this from node_modules/audio-tour-player/sw.js
-├── audio-tour-player.js
-├── tours/
-│   └── my-tour.json
-├── images/
-└── audio/
 ```
 
 ## License
