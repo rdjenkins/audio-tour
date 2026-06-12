@@ -5,6 +5,7 @@
   "files": [
     "dist",
     "README.md",
+    "CONTRIBUTING.md",
     "sw.js",
     "LICENSE"
   ],
@@ -29,8 +30,7 @@
   "scripts": {
     "dev": "npm run copy-sw && vite",
     "build": "npm run copy-sw && vite build",
-    "preview": "npm run copy-sw && vite preview",
-    "prepare-demo": "node prepare-site.js && echo 'deprecated - use audio-tour-player-example instead'",
+    "preview": "npm run build && node prepare-site.js && vite preview",
     "copy-sw": "echo '// DO NOT EDIT THIS COPY OF sw.js' | cat - sw.js > public/sw.js"
   },
   "devDependencies": {

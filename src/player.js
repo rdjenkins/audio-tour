@@ -19,7 +19,17 @@ class AudioTourPlayer extends HTMLElement {
         this.isOfflineReady = false;
         // storage interface
         this.storage = this.getBrowserStorage(); // Default to browser
-        this.urlRewriter = async (url) => url; // Default: do nothing
+        this.percentCached = 0; // shortcut to remember the percentage
+        this.urlRewriter = async (url) => {
+            if (this.storage.cacheIt) { // if another storage interface is injected it may or may not have a cacheIt function
+                // Be greedy and try to aysnchronously fetch and cache this media content
+                this.storage.cacheIt(url, this.cacheName);
+            } else {
+                console.warn(CONSOLE_PREFIX + "No cacheIt function in storage interface; skipping caching for:", url);
+            }
+            // Default (browser): just return the URL (Capacitor apps using this library will over-ride this function)
+            return url;
+        } 
         this.downloadBtnText = ''; // for storing the download button text for collapsing
 
 
@@ -111,8 +121,9 @@ class AudioTourPlayer extends HTMLElement {
                 for (const url of urls) {
                     if (await cache.match(url)) foundCount++;
                 }
+                this.percentCached = Math.round((foundCount / urls.length) * 100);
                 return {
-                    percent: Math.round((foundCount / urls.length) * 100),
+                    percent: this.percentCached,
                     isComplete: foundCount === urls.length,
                     found: foundCount
                 };
@@ -121,12 +132,38 @@ class AudioTourPlayer extends HTMLElement {
                 const cache = await caches.open(cacheName);
                 let completed = 0;
                 for (const url of urls) {
-                    const response = await fetch(url);
-                    if (!response.ok) throw new Error('Network fail');
-                    await cache.put(url, response);
+                    var found = await cache.match(url);
+                    if (!found) {
+                        const response = await fetch(url);
+                        if (!response.ok) throw new Error('Network fail');
+                        await cache.put(url, response);
+                    } else {
+                        console.log(CONSOLE_PREFIX + "Already in cache:", url);
+                    }
                     completed++;
-                    onProgress(Math.round((completed / urls.length) * 100));
+                    var percent = Math.round((completed / urls.length) * 100);
+                    if (percent > this.percentCached) {
+                        onProgress(Math.round((completed / urls.length) * 100));
+                    }
                 }
+            },
+            cacheIt: async (url, cacheName = this.cacheName) => {
+                // the service worker should do this but they are sometimes unreliable
+                // we'll be greedy and snaffle the media right now if we can
+                caches.open(cacheName).then(cache => {
+                    cache.match(url).then(found => {
+                        if (!found) {
+                            console.log(CONSOLE_PREFIX + `cacheIt: ${url} not in cache, fetching and storing...`);
+                            fetch(url).then(response => {
+                                if (!response.ok) throw new Error("Resource not found");
+                                console.log(CONSOLE_PREFIX + `cacheIt: storing ${url} to ${cacheName}`)
+                                this.storage.store(url, cacheName, response);
+                            }).catch(err => {
+                                console.error(CONSOLE_PREFIX + "Failed to fetch resource for caching:", err);
+                            });
+                        }
+                    });
+                });
             },
             store: async (url, cacheName, response) => {
                 const cache = await caches.open(cacheName);
@@ -342,7 +379,7 @@ if (this.tourPath) {
 
         try {
         // Use a delegate-friendly way to get the data
-        const data = await this.loadResource(jsonPath);
+        const data = await this.loadJsonResource(jsonPath);
             this.tourData = data.stops;
             this.renderStop(0);
         } catch (error) {
@@ -629,7 +666,7 @@ if (this.tourPath) {
     /**
      * Universal loader that handles Browser vs Capacitor
      */
-    async loadResource(path) {
+    async loadJsonResource(path) {
         // 1. Check if a custom loader was provided (for Capacitor Filesystem)
         if (this.customLoader) {
             return await this.customLoader(path);
@@ -647,7 +684,7 @@ if (this.tourPath) {
         }
 
         // 3. Fallback to standard fetch (which the Service Worker will intercept)
-        console.log(CONSOLE_PREFIX + "loadResource() Loading via fetch:", path);
+        console.log(CONSOLE_PREFIX + "loadJsonResource() Loading via fetch:", path);
         const response = await fetch(path);
         if (!response.ok) throw new Error("Resource not found");
         console.log(CONSOLE_PREFIX + `storing ${path} to ${this.cacheName}`)

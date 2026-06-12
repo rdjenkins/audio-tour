@@ -18,4 +18,4 @@ html = html.replace(
 // 3. Write it to the dist folder
 fs.writeFileSync(distHtmlPath, html);
 
-console.log('✅ Production index.html generated in /dist');
+console.log('✅ Preview index.html generated in /dist');
