@@ -10,6 +10,7 @@ class AudioTourPlayer extends HTMLElement {
         // State
         this.tourData = null;
         this.currentIndex = 0;
+        this.detailIndex = null; // Tracks if we are inside a nested stop
         this.tourPath = this.getAttribute('src') || './tours/st-nuns.json'; // provide something for developers
         this.cacheName = this.getAttribute('cache-name') || 'audio-tour-player-cache-v1';
         console.log(CONSOLE_PREFIX + "Using cache name:", this.cacheName);
@@ -17,6 +18,7 @@ class AudioTourPlayer extends HTMLElement {
         this.showOffline = (this.getAttribute('offline-capable') === 'false') ? false : true; // assume we want to show the download for offline button
         console.log(CONSOLE_PREFIX + "Offline capable:", this.showOffline);
         this.isOfflineReady = false;
+        
         // storage interface
         this.storage = this.getBrowserStorage(); // Default to browser
         this.percentCached = 0; // shortcut to remember the percentage
@@ -31,7 +33,6 @@ class AudioTourPlayer extends HTMLElement {
             return url;
         } 
         this.downloadBtnText = ''; // for storing the download button text for collapsing
-
 
         // SVG icons
         this.playIcon = `
@@ -185,17 +186,15 @@ class AudioTourPlayer extends HTMLElement {
     }
 
     connectedCallback() {
-
         this.render();
-
         this.enableOffline();
 
-if (this.tourPath) {
-        console.log(CONSOLE_PREFIX + "Initializing with path:", this.tourPath);
-        this.initTour(this.tourPath);
-    } else {
-        console.log(CONSOLE_PREFIX + "Waiting for src attribute...");
-    }
+        if (this.tourPath) {
+            console.log(CONSOLE_PREFIX + "Initializing with path:", this.tourPath);
+            this.initTour(this.tourPath);
+        } else {
+            console.log(CONSOLE_PREFIX + "Waiting for src attribute...");
+        }
     }
 
     render() {
@@ -359,27 +358,31 @@ if (this.tourPath) {
             hintPrev.classList.remove("hint-visible");
 
             if (Math.abs(diff) > 70) {
-                if (diff > 0) this.changeStop(1);
-                else this.changeStop(-1);
+                if (this.detailIndex !== null) {
+                    // Inside a nested stop, only allow swipe right (negative diff) to go back
+                    if (diff < 0) this.changeStop('parent');
+                } else {
+                    if (diff > 0) this.changeStop(1);
+                    else this.changeStop(-1);
+                }
             }
 
             isSwiping = false; // Reset the flag
         }, { passive: true });
-
         /* End of swipe logic */
-
     }
 
     async initTour(jsonPath) {
         this.tourData = null;
         this.currentIndex = 0;
+        this.detailIndex = null;
         this.resetAudioUI();
         const voice = this.shadowRoot.getElementById("voice");
         if (voice) voice.pause();
 
         try {
-        // Use a delegate-friendly way to get the data
-        const data = await this.loadJsonResource(jsonPath);
+            // Use a delegate-friendly way to get the data
+            const data = await this.loadJsonResource(jsonPath);
             this.tourData = data.stops;
             this.renderStop(0);
         } catch (error) {
@@ -392,12 +395,20 @@ if (this.tourPath) {
         }
     }
 
-    renderStop(index) {
+    renderStop(index, detailIndex = null) {
         if (!this.tourData) return;
 
         const s = this.shadowRoot;
-        const stop = this.tourData[index];
-        this.currentIndex = index;
+        
+        let stop;
+        if (detailIndex !== null) {
+            stop = this.tourData[index].stops[detailIndex];
+            this.detailIndex = detailIndex;
+        } else {
+            stop = this.tourData[index];
+            this.currentIndex = index;
+            this.detailIndex = null;
+        }
 
         // 1. Handle the Menu Area (the dynamic buttons)
         // First, find or create the menu container so we can clear it
@@ -414,8 +425,8 @@ if (this.tourPath) {
         // clear the menu container at the start of every stop
         menuContainer.innerHTML = "";
 
-        // If we are on the Home/Menu page (index 0), build the buttons
-        if (index === 0) {
+        // If we are on the Home/Menu page (index 0)
+        if (index === 0 && detailIndex === null) {
 
             if (this.showOffline === true) { // show the download button and enable access cache functions
                 const downloadBtn = document.createElement("button");
@@ -501,6 +512,19 @@ if (this.tourPath) {
                 };
                 menuContainer.appendChild(btn);
             });
+        } 
+        // If the current stop has nested 'stops'
+        else if (stop.stops && stop.stops.length > 0) {
+            stop.stops.forEach((childStop, dIdx) => {
+                const btn = document.createElement("button");
+                btn.className = "menu-stop-btn";
+                btn.textContent = childStop.title;
+                btn.onclick = () => {
+                    this.resetAudioUI();
+                    this.renderStop(index, dIdx); // pass current main index and the child's index
+                };
+                menuContainer.appendChild(btn);
+            });
         }
 
         /* Fancy text fading in ... */
@@ -527,8 +551,8 @@ if (this.tourPath) {
         if (stop.image) {
             this.urlRewriter(stop.image).then(finalImageUrl => {
                 container.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url(${finalImageUrl})`;
-            container.style.backgroundSize = "cover";
-            container.style.backgroundPosition = "center";
+                container.style.backgroundSize = "cover";
+                container.style.backgroundPosition = "center";
             });
         } else {
             container.style.backgroundImage = "none";
@@ -554,7 +578,7 @@ if (this.tourPath) {
             voice.pause();
         }
 
-        this.renderNav(index);
+        this.renderNav(index, detailIndex);
     }
 
     resetAudioUI() {
@@ -565,42 +589,54 @@ if (this.tourPath) {
             progressBar.value = 0;
             progressBar.style.background = `linear-gradient(to right, #ff9800 0%, rgba(255, 255, 255, 0.3) 0%)`;
         }
-            const listenBtn = s.getElementById("listenBtn");
-            const headphones = s.getElementById("headphones");
-            if (listenBtn) listenBtn.innerHTML = this.playIcon;
-            if (headphones) headphones.classList.remove("playing");
+        const listenBtn = s.getElementById("listenBtn");
+        const headphones = s.getElementById("headphones");
+        if (listenBtn) listenBtn.innerHTML = this.playIcon;
+        if (headphones) headphones.classList.remove("playing");
     }
 
-    renderNav(index) {
+    renderNav(index, detailIndex = null) {
         const navBar = this.shadowRoot.getElementById("nav-bar");
-        const isFirst = index === 0;
-        const isLast = index === this.tourData.length - 1;
+        
+        if (detailIndex !== null) {
+            // Navigation for inside a nested stop
+            navBar.innerHTML = `<a class="nav previous" id="prevBtn">Back</a> <a class="nav menu" id="menuBtn">Menu</a>`;
+            navBar.querySelector("#prevBtn").onclick = () => this.changeStop('parent');
+            navBar.querySelector("#menuBtn").onclick = () => this.changeStop('home');
+        } else {
+            // Standard Navigation
+            const isFirst = index === 0;
+            const isLast = index === this.tourData.length - 1;
 
-        navBar.innerHTML = `
-            ${isFirst ? `<a class="nav next" id="nextBtn">Start</a>` :
-                `<a class="nav previous" id="prevBtn">Back</a> <a class="nav menu" id="menuBtn">Menu</a>`}
-            ${!isLast && !isFirst ? `<a class="nav next" id="nextBtn">Next</a>` : ''}
-        `;
+            navBar.innerHTML = `
+                ${isFirst ? `<a class="nav next" id="nextBtn">Start</a>` :
+                    `<a class="nav previous" id="prevBtn">Back</a> <a class="nav menu" id="menuBtn">Menu</a>`}
+                ${!isLast && !isFirst ? `<a class="nav next" id="nextBtn">Next</a>` : ''}
+            `;
 
         // Event listeners for the navigation
-        if (navBar.querySelector("#prevBtn")) navBar.querySelector("#prevBtn").onclick = () => this.changeStop(-1);
-        if (navBar.querySelector("#menuBtn")) navBar.querySelector("#menuBtn").onclick = () => this.changeStop(0);
-        if (navBar.querySelector("#nextBtn")) navBar.querySelector("#nextBtn").onclick = () => this.changeStop(1);
+            if (navBar.querySelector("#prevBtn")) navBar.querySelector("#prevBtn").onclick = () => this.changeStop(-1);
+            if (navBar.querySelector("#menuBtn")) navBar.querySelector("#menuBtn").onclick = () => this.changeStop('home');
+            if (navBar.querySelector("#nextBtn")) navBar.querySelector("#nextBtn").onclick = () => this.changeStop(1);
+        }
     }
 
     changeStop(direction) {
         const s = this.shadowRoot;
-        s.getElementById("progressBar").value = 0;
-        s.getElementById("listenBtn").innerHTML = this.playIcon;
-        s.getElementById("headphones").classList.remove("playing");
         this.resetAudioUI();
 
-        if (direction === 0) {
+        if (direction === 'home') {
             this.renderStop(0);
             return;
         }
+        
+        if (direction === 'parent') {
+            this.renderStop(this.currentIndex);
+            return;
+        }
+
         const newIndex = this.currentIndex + direction;
-        if (newIndex < 0 || newIndex >= this.tourData.length) return; // Out of bounds check
+        if (newIndex < 0 || newIndex >= this.tourData.length) return; 
         this.renderStop(newIndex);
     }
 
@@ -610,10 +646,17 @@ if (this.tourPath) {
         urls.add('./');
         urls.add('sw.js');
         urls.add(this.tourPath);
-        this.tourData.forEach(stop => {
+        
+        // Recursive helper to grab media from all stops, including nested ones
+        const addMedia = (stop) => {
             if (stop.audio) urls.add(stop.audio);
             if (stop.image) urls.add(stop.image);
-        });
+            if (stop.stops) {
+                stop.stops.forEach(child => addMedia(child));
+            }
+        };
+
+        this.tourData.forEach(stop => addMedia(stop));
         return Array.from(urls);
     }
 
@@ -623,7 +666,7 @@ if (this.tourPath) {
      * this.storage defaults to getBrowserStorage() that uses Cache API and a Storage Worker
      * For other environments (such as capacitor) inject a different storage function
      *  - provide for getStatus, preload, and clear
-     * See README for an example (TBD)
+     * See README for an example
     */
 
     async getCacheStatus() {
@@ -718,22 +761,22 @@ if (this.tourPath) {
         }
     }
 
-static get observedAttributes() {
-    return ['src'];
-}
+    static get observedAttributes() {
+        return ['src'];
+    }
 
-attributeChangedCallback(name, oldValue, newValue) {
+    attributeChangedCallback(name, oldValue, newValue) {
     // If the src changed and it's not null/empty
-    if (name === 'src' && newValue && oldValue !== newValue) {
-        this.tourPath = newValue;
-        
+        if (name === 'src' && newValue && oldValue !== newValue) {
+            this.tourPath = newValue;
+            
         // Only trigger init if the component is actually in the DOM
-        if (this.isConnected) {
-            console.log(CONSOLE_PREFIX + "Source updated to:", newValue);
-            this.initTour(newValue);
+            if (this.isConnected) {
+                console.log(CONSOLE_PREFIX + "Source updated to:", newValue);
+                this.initTour(newValue);
+            }
         }
     }
-}
 
 }
 

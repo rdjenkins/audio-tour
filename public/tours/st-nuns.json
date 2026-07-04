@@ -19,7 +19,23 @@
             "title": "Vestibule",
             "image": "images/vestibule.jpg",
             "audio": "audio/vestibule.mp3",
-            "desc": "You are now inside St Nun's church having entered through the wood and glass vestibule."
+            "desc": "You are now inside St Nun's church having entered through the wood and glass vestibule.",
+            "stops": [
+                {
+                    "id": "vestibule_detail1",
+                    "title": "vestibule_detail1",
+                    "image": "images/pilkington-window.jpg",
+                    "audio": "audio/pilkington.mp3",
+                    "desc": "This is the Pilkington stained-glass window - the only picture window in St Nun's church."
+                },
+                {
+                    "id": "vestibule_detail2",
+                    "title": "vestibule_detail2",
+                    "image": "images/stnun1.jpg",
+                    "audio": "audio/front.mp3",
+                    "desc": "The entrance to St Nun's church is on Fore Street by the market cross and the town hall."
+                }
+            ]
         },
         {
             "id": "kitchenette",
