@@ -5,7 +5,6 @@ Offline-capable audio tour for museums / heritage locations.
 We needed to deliver offline-capable audio tours for 100+ venues in rural Cornwall so just built our own library. It may be useful for your project as it handles the audio controls, and extras such as caching and touch gestures so you can focus on the content.
 
 [![npm version](https://img.shields.io/npm/v/audio-tour-player)](https://www.npmjs.com/package/audio-tour-player)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This is the audio tour software we are developing for <https://celticquietplaces.com/> (see [a live example](https://celticquietplaces.com/media/tour-example/)).
 

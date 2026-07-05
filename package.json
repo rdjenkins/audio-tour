@@ -26,7 +26,7 @@
     "tour-guide"
   ],
   "author": "Dean Jenkins dean@celticquietplaces.com",
-  "license": "SEE LICENSE",
+  "license": "Non-commercial use only. See LICENSE file for details.",
   "scripts": {
     "dev": "npm run copy-sw && vite",
     "build": "npm run copy-sw && vite build",
