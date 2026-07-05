@@ -18,9 +18,10 @@ All rights reserved.
 
 2. LICENSE GRANT (NON-COMMERCIAL ONLY)
 Subject to this License, You are granted a non-exclusive, non-transferable, worldwide license to:
-(a) use the Software for internal business purposes; and
+(a) use the Software for personal, educational, or internal business purposes; and
 (b) modify the Software for Your internal purposes; and
-(c) distribute copies of the Software (in source or object form) to others solely for non-commercial purposes consistent with this License.
+(c) distribute copies of the Software (in source or object form) to others solely for non-commercial purposes consistent with this License; and
+(d) any modified version of the Software that You distribute must be licensed under this same License, and must include a notice describing the changes made.
 
 3. RESTRICTIONS (NON-COMMERCIAL CONDITIONS)
 3.1 Prohibited Commercial Use.
@@ -51,7 +52,7 @@ THE SOFTWARE IS PROVIDED “AS IS,” WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT WILL THE COPYRIGHT HOLDER(S) OR CONTRIBUTORS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR EXEMPLARY DAMAGES, OR ANY LOSS OF PROFITS, REVENUE, OR DATA, ARISING OUT OF OR RELATING TO THE SOFTWARE OR THIS LICENSE, WHETHER IN AN ACTION IN CONTRACT, TORT, OR OTHERWISE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 
 8. GOVERNING LAW
-This License is governed by the laws of United Kingdom excluding its conflict of laws rules. Any dispute arising under this License shall be subject to the exclusive jurisdiction of the courts located in United Kingdom.
+This License is governed by the laws of England and Wales excluding its conflict of laws rules. Any dispute arising under this License shall be subject to the exclusive jurisdiction of the courts located in England and Wales.
 
 9. CONTACT
 For commercial licensing inquiries, contact: https://deanjenkins.me/ 
