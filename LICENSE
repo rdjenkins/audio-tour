@@ -1,21 +1,57 @@
-MIT License
+AUDIO TOUR PLAYER NON-COMMERCIAL SOFTWARE LICENSE (v1.1 and above)
 
-Copyright (c) 2026 CelticQuietPlaces.com
+Copyright (c) 2026 Dean Jenkins https://deanjenkins.me/
+All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+1. DEFINITIONS
+1.1 “Software” means the computer software distributed under this License, including any source code, object code, compiled forms, and documentation provided with it.
+1.2 “You” means the individual or entity exercising rights granted under this License.
+1.3 “Use” means any act of exercising rights granted under this License, including copying, distributing, modifying, and/or making the Software available to others.
+1.4 “Commercial Use” means any use that is:
+(a) intended to obtain commercial advantage or monetary compensation; or
+(b) for which You charge fees (including subscriptions, licensing fees, access fees, usage fees, or service fees) in connection with the Software itself or with functionality that includes, derives from, or provides access to the Software’s functionality to third parties; or
+(c) for which You provide access to the Software’s functionality to any third party over a network, including via a hosted service, web interface, API, dashboard, or similar means (“Hosted Access”), where such access is provided for a fee or where the arrangement is otherwise commercially monetized.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1.5 “Third Party” means any person or entity other than You.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+1.6 “Component Use” means incorporating, linking to, bundling, or otherwise using the Software (or any substantial portion of it, or any derivative work based on it) as a component of another software product or service.
+
+2. LICENSE GRANT (NON-COMMERCIAL ONLY)
+Subject to this License, You are granted a non-exclusive, non-transferable, worldwide license to:
+(a) use the Software for internal business purposes; and
+(b) modify the Software for Your internal purposes; and
+(c) distribute copies of the Software (in source or object form) to others solely for non-commercial purposes consistent with this License.
+
+3. RESTRICTIONS (NON-COMMERCIAL CONDITIONS)
+3.1 Prohibited Commercial Use.
+You may not do any Commercial Use.
+
+3.2 No charging for hosted or web access.
+Without limiting Section 3.1, You may not provide Hosted Access to the Software’s functionality to Third Parties for a fee or as part of a commercially monetized offering.
+
+3.3 No commercial component use.
+You may not use the Software as a Component Use in any other software product or service that is offered commercially, including any product or service that is sold, licensed for a fee, or used to generate revenue.
+
+3.4 Reservation of rights.
+All rights not expressly granted under this License are reserved.
+
+4. ATTRIBUTION AND NOTICES
+If You distribute the Software (in source or object form), You must:
+(a) retain all copyright notices;
+(b) retain this License text; and
+(c) provide a copy of this License with the distribution (for example, by including LICENSE-NC.txt in the package).
+
+5. TERMINATION
+This License terminates automatically if You breach any material term of this License. Upon termination, You must cease all use of the Software. Termination will not affect rights already granted to You for acts completed prior to termination, to the extent permitted by applicable law.
+
+6. DISCLAIMER OF WARRANTIES
+THE SOFTWARE IS PROVIDED “AS IS,” WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. YOU ASSUME ALL RISK ARISING OUT OF USE OF THE SOFTWARE.
+
+7. LIMITATION OF LIABILITY
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT WILL THE COPYRIGHT HOLDER(S) OR CONTRIBUTORS BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR EXEMPLARY DAMAGES, OR ANY LOSS OF PROFITS, REVENUE, OR DATA, ARISING OUT OF OR RELATING TO THE SOFTWARE OR THIS LICENSE, WHETHER IN AN ACTION IN CONTRACT, TORT, OR OTHERWISE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+8. GOVERNING LAW
+This License is governed by the laws of United Kingdom excluding its conflict of laws rules. Any dispute arising under this License shall be subject to the exclusive jurisdiction of the courts located in United Kingdom.
+
+9. CONTACT
+For commercial licensing inquiries, contact: https://deanjenkins.me/ 

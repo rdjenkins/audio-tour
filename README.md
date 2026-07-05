@@ -11,15 +11,17 @@ This is the audio tour software we are developing for <https://celticquietplaces
 
 ## Features
 
-Native Web Components – Works in React, Vue, Svelte, or a plain HTML file.
+Whole page experience - full page portrait images (on mobiles and tablets) with audio controls. The max page width is set at 768px so it appears full width on mobiles and most tablets, but still looks OK on desktops.
 
 JSON-Driven Content – Tours defined in a single .json file. Support for local media or remote URLs.
+
+Additional detail at each stop - have an interesting object or extra detail at one of the stops? Add it to the tour within that stop.
+
+Native Web Components – Works in React, Vue, Svelte, or a plain HTML file.
 
 Storage interface – Supports the Cache API using a Service Worker. Your users can download tours and then explore with zero signal. The built-in default is for browsers so works great for websites but NOT for within apps such those using capacitor. For capacitor (like us) you need to inject a new storage function (see example below).
 
 Lightweight – Tiny bundle footprint.
-
-Whole page experience - full page portrait images (on mobiles and tablets) with audio controls. The max page width is set at 768px so it appears full width on mobiles and most tablets, but still looks OK on desktops.
 
 Native-Feel Interactions – Includes smooth touch gestures, swipe navigation, and high-performance SVG animations for a premium app feel.
 
@@ -76,14 +78,25 @@ Note, because of the way browsers handle audio media, the filename must end with
 
 ### Create your my-tour.json
 
-The tour is controlled by a simple JSON file. If you are going to work cross-origin (storing media and your json file is on different domain) then remember to set CORS on that server. Each "stop" supports a title, description, background image, and an audio track.
+The tour is controlled by a simple JSON file. An array of stops are shown in the order they appear in the file. Each one should have:
+
+ - title (this also appears on the button for this stop so keep it brief)
+ - desc (a one or two sentence description of where and what the stop is)
+ - image (the image shown behind the audio controls - use a portrait picture as we assume most people will view on mobile)
+ - audio (an audio file)
+
+The very first 'stop' is the main menu screen so choose an image to represent the whole tour and text that invites visitors to start the tour.
+
+Nested details. Audio tour (after version 1.1) handles details within each stop. The structure for detail is just like the other stops but posted as a "stops" array within the stop. See example below.
+
+If you are going to work cross-origin (storing media and your json file is on different domain) then remember to set CORS on that server. Each "stop" supports a title, description, background image, and an audio track.
 
 ```
 {
   "stops": [
     {
       "title": "Welcome to the Tour",
-      "desc": "This is the main menu. From here you can download the tour for offline use or select a specific stop.",
+      "desc": "This is the main menu. From here you can download the tour for offline use or select a specific stop. Press start or choose a stop",
       "image": "assets/intro-bg.jpg"
     },
     {
@@ -91,6 +104,20 @@ The tour is controlled by a simple JSON file. If you are going to work cross-ori
       "desc": "You are standing before a site of significant local history...",
       "image": "assets/stop1.jpg",
       "audio": "assets/audio/stop1.mp3"
+    },
+    {
+      "title": "The Interesting wall",
+      "desc": "You are standing before a site of significant local history...",
+      "image": "assets/stop2.jpg",
+      "audio": "assets/audio/stop2.mp3"
+      "stops": [
+           {
+            "title": "Additional detail",
+            "desc": "This is an example nested detail stop. More information on this interesting wall",
+            "image": "assets/stop2-detail1.jpg",
+            "audio": "assets/audio/stop2-detail1.mp3"
+      }
+      ]
     }
   ]
 }
@@ -131,9 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ## License
 
-This project is licensed under the MIT License.
+- **v1.0.x (and earlier):** MIT License (see LICENSE-MIT).
+- **v1.1.0 (and later):** Non-commercial License (see LICENSE).
 
-That means you are free to use, copy, modify, merge, publish, and even sell this software in both personal and commercial projects. All we ask is that you keep the original copyright notice.
 
 ## Acknowledgements
 
