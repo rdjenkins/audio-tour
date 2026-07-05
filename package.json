@@ -7,7 +7,7 @@
     "README.md",
     "CONTRIBUTING.md",
     "sw.js",
-    "LICENSES/LICENSE"
+    "LICENSE"
   ],
   "main": "./dist/audio-tour-player.js",
   "module": "./dist/audio-tour-player.js",

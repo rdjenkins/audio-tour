@@ -157,8 +157,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ## License
 
-- **v1.0.x (and earlier):** MIT License (see LICENSE-MIT).
 - **v1.1.0 (and later):** Non-commercial License (see LICENSE).
+- **v1.0.x (and earlier):** MIT License
 
 
 ## Acknowledgements
