@@ -11,6 +11,8 @@ class AudioTourPlayer extends HTMLElement {
         this.tourData = null;
         this.currentIndex = 0;
         this.detailIndex = null; // Tracks if we are inside a nested stop
+        this.galleryIndex = 0;   // Tracks the current photo index in the overlay gallery
+        this.galleryData = [];   // Stores the currently loaded flattened gallery array
         this.tourPath = this.getAttribute('src') || './tours/st-nuns.json'; // provide something for developers
         this.cacheName = this.getAttribute('cache-name') || 'audio-tour-player-cache-v1';
         console.log(CONSOLE_PREFIX + "Using cache name:", this.cacheName);
@@ -237,10 +239,22 @@ class AudioTourPlayer extends HTMLElement {
             </div>
             
             <audio id="voice" preload="auto"></audio>
+
+            <!-- Photo Gallery Overlay Frame Layer -->
+            <div id="gallery-overlay" class="gallery-overlay">
+                <button id="gallery-close" class="gallery-close" title="Close Gallery">&times;</button>
+                <button id="gallery-prev" class="gallery-nav prev" title="Previous Image">${this.leftArrow}</button>
+                <div id="gallery-viewport" class="gallery-viewport">
+                    <img id="gallery-img" class="gallery-img" src="" alt="Gallery Image">
+                </div>
+                <button id="gallery-next" class="gallery-nav next" title="Next Image">${this.rightArrow}</button>
+                <div id="gallery-caption" class="gallery-caption"></div>
+            </div>
         </div>
         `;
 
         this.setupEventListeners();
+        this.setupGalleryEventListeners();
     }
 
     setupEventListeners() {
@@ -382,6 +396,146 @@ class AudioTourPlayer extends HTMLElement {
         /* End of swipe logic */
     }
 
+    /**
+     * Set up operational interaction, zooming and panning event environments for the overlay gallery layer.
+     */
+    setupGalleryEventListeners() {
+        const s = this.shadowRoot;
+        const overlay = s.getElementById("gallery-overlay");
+        const closeBtn = s.getElementById("gallery-close");
+        const prevBtn = s.getElementById("gallery-prev");
+        const nextBtn = s.getElementById("gallery-next");
+        const img = s.getElementById("gallery-img");
+        const viewport = s.getElementById("gallery-viewport");
+
+        closeBtn.onclick = (e) => {
+            e.stopPropagation();
+            overlay.classList.remove("active");
+        };
+
+        prevBtn.onclick = (e) => {
+            e.stopPropagation();
+            this.navigateGallery(-1);
+        };
+        nextBtn.onclick = (e) => {
+            e.stopPropagation();
+            this.navigateGallery(1);
+        };
+
+        // Variable tracking for scaling structures and panning mechanics
+        let scale = 1;
+        let translateX = 0;
+        let translateY = 0;
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
+        let initialTouchDist = 0;
+        let lastTap = 0;
+
+        const updateTransform = () => {
+            if (scale <= 1) {
+                scale = 1;
+                translateX = 0;
+                translateY = 0;
+            }
+            img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+        };
+
+        // Expose a reset hook accessible when transitioning pictures
+        this.resetGalleryZoom = () => {
+            scale = 1;
+            translateX = 0;
+            translateY = 0;
+            updateTransform();
+        };
+
+        // Multi-touch gestures processing context
+        viewport.addEventListener("touchstart", (e) => {
+            e.stopPropagation(); // Block background tour swipe triggers
+            if (e.touches.length === 1) {
+                isDragging = true;
+                startX = e.touches[0].clientX - translateX;
+                startY = e.touches[0].clientY - translateY;
+
+                // Double tap handler
+                const now = Date.now();
+                if (now - lastTap < 300) {
+                    if (scale > 1) {
+                        scale = 1;
+                        translateX = 0;
+                        translateY = 0;
+                    } else {
+                        scale = 2.5;
+                    }
+                    updateTransform();
+                    e.preventDefault();
+                }
+                lastTap = now;
+            } else if (e.touches.length === 2) {
+                isDragging = false;
+                initialTouchDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+            }
+        }, { passive: false });
+
+        viewport.addEventListener("touchmove", (e) => {
+            e.stopPropagation();
+            if (isDragging && scale > 1) {
+                translateX = e.touches[0].clientX - startX;
+                translateY = e.touches[0].clientY - startY;
+                updateTransform();
+                e.preventDefault();
+            } else if (e.touches.length === 2) {
+                const currentDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                const factor = currentDist / (initialTouchDist || 1);
+                scale = Math.max(1, Math.min(5, scale * factor));
+                initialTouchDist = currentDist;
+                updateTransform();
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        viewport.addEventListener("touchend", (e) => {
+            e.stopPropagation();
+            isDragging = false;
+        });
+
+        // Mouse compatibility configurations for verification environments
+        viewport.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            startX = e.clientX - translateX;
+            startY = e.clientY - translateY;
+        });
+
+        viewport.addEventListener("mousemove", (e) => {
+            if (isDragging && scale > 1) {
+                translateX = e.clientX - startX;
+                translateY = e.clientY - startY;
+                updateTransform();
+            }
+        });
+
+        window.addEventListener("mouseup", () => {
+            isDragging = false;
+        });
+
+        viewport.addEventListener("dblclick", () => {
+            if (scale > 1) {
+                scale = 1;
+                translateX = 0;
+                translateY = 0;
+            } else {
+                scale = 2.5;
+            }
+            updateTransform();
+        });
+    }
+
     async initTour(jsonPath) {
         this.tourData = null;
         this.currentIndex = 0;
@@ -446,7 +600,7 @@ class AudioTourPlayer extends HTMLElement {
                     this.downloadBtnText = (this.downloadBtnText === '') ? downloadBtn.innerHTML : this.downloadBtnText; // store text
                     downloadBtn.innerHTML = `⌞ ⌝`;
                     downloadBtn.classList.add("collapsed");
-                }, 8000); // longer first time before collapsing 
+                }.bind(this), 8000); // longer first time before collapsing 
                 downloadBtn.innerHTML = `${this.downloadIcon} Checking status...`;
                 menuContainer.appendChild(downloadBtn);
     
@@ -542,7 +696,6 @@ class AudioTourPlayer extends HTMLElement {
             galleryBtn.className = "menu-stop-btn gallery-btn";
             galleryBtn.innerHTML = `${this.galleryIcon}`;
             galleryBtn.onclick = () => {
-                //this.resetAudioUI();
                 this.renderGallery(stop.gallery);
             };
             menuContainer.appendChild(galleryBtn);
@@ -672,6 +825,11 @@ class AudioTourPlayer extends HTMLElement {
         const addMedia = (stop) => {
             if (stop.audio) urls.add(stop.audio);
             if (stop.image) urls.add(stop.image);
+            if (stop.gallery) {
+                stop.gallery.flat().forEach(item => {
+                    if (item.image) urls.add(item.image);
+                });
+            }
             if (stop.stops) {
                 stop.stops.forEach(child => addMedia(child));
             }
@@ -727,9 +885,57 @@ class AudioTourPlayer extends HTMLElement {
         }
     }
 
+    /**
+     * Parse flat or nested array inputs, initialize overlay visibility, and step into rendering the items.
+     */
     renderGallery(gallery) {
-        console.log(CONSOLE_PREFIX + "Gallery rendering not implemented yet. Gallery data:", gallery);
-        return;
+        if (!gallery) return;
+        this.galleryData = gallery.flat();
+        this.galleryIndex = 0;
+
+        const overlay = this.shadowRoot.getElementById("gallery-overlay");
+        if (overlay) {
+            overlay.classList.add("active");
+            this.updateGalleryItem();
+        }
+    }
+
+    /**
+     * Render data for the targeted picture index and update pagination layout states.
+     */
+    async updateGalleryItem() {
+        if (!this.galleryData || this.galleryData.length === 0) return;
+
+        const s = this.shadowRoot;
+        const img = s.getElementById("gallery-img");
+        const caption = s.getElementById("gallery-caption");
+        const prevBtn = s.getElementById("gallery-prev");
+        const nextBtn = s.getElementById("gallery-next");
+
+        const item = this.galleryData[this.galleryIndex];
+
+        if (this.resetGalleryZoom) this.resetGalleryZoom();
+
+        caption.innerText = item.caption || "";
+
+        if (item.image) {
+            const finalImgUrl = await this.urlRewriter(item.image);
+            img.src = finalImgUrl;
+        }
+
+        prevBtn.style.visibility = this.galleryIndex === 0 ? "hidden" : "visible";
+        nextBtn.style.visibility = this.galleryIndex === this.galleryData.length - 1 ? "hidden" : "visible";
+    }
+
+    /**
+     * Steps active photo indices backwards or forwards.
+     */
+    navigateGallery(direction) {
+        const nextIdx = this.galleryIndex + direction;
+        if (nextIdx >= 0 && nextIdx < this.galleryData.length) {
+            this.galleryIndex = nextIdx;
+            this.updateGalleryItem();
+        }
     }
 
     /**
