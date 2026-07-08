@@ -429,7 +429,7 @@ h1 {
     pointer-events: auto;
 }
 
-.gallery-close {
+.gallery-close { 
     position: absolute;
     top: 15px;
     right: 15px;
