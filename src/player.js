@@ -67,11 +67,11 @@ class AudioTourPlayer extends HTMLElement {
     <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
         <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
     </svg>`;
-        this.galleryIcon = `
+        this.galleryIconPlain = `
     <svg fill="currentColor" width="24px" height="24px" viewBox="0 0 30 30">
         <path d="M10.5 5c-.073 0-.14.015-.207.045L.83 9.35c-.737.335-1.033 1.227-.687 1.945L6.355 24.18c.347.718 1.24 1.07 1.967.664l3.422-1.907c.588-.298.044-1.18-.486-.873L7.834 23.97c-.196.11-.467.01-.58-.224l-.414-.857 1.885-.943c.605-.304.078-1.16-.45-.894l-1.87.935L1.044 10.86c-.113-.233-.023-.498.2-.6l9.464-4.305c.485-.222.287-.955-.207-.955zm4.777-1c-.19 0-.377.035-.552.104-.35.137-.648.407-.81.775L8.122 18.15c-.32.737.02 1.61.757 1.93l13.277 5.797c.737.32 1.61-.02 1.93-.757l5.795-13.277c.32-.737-.023-1.61-.76-1.93L15.847 4.12c-.184-.08-.378-.12-.57-.12zm-.015.994c.06.002.122.016.183.043l13.278 5.795c.244.107.345.37.238.613l-4.82 11.047-14.13-6.166 4.822-11.05c.08-.182.248-.286.43-.282zM9.61 17.242l14.13 6.168-.572 1.313c-.107.244-.37.347-.613.24L9.277 19.168c-.244-.107-.347-.37-.24-.615zM7.5 16c-.22-.002-.408.133-.475.342l-1 3c-.194.583.733.967.95.316l1-3c.112-.323-.133-.656-.475-.658zm9-3c-.075 0-.156.02-.223.053l-4 2c-.596.267-.093 1.19.446.894l3.605-1.802 1.756 2.632c.14.21.413.282.64.17l3.604-1.802 1.756 2.632c.352.547 1.19-.033.832-.554l-2-3c-.14-.21-.413-.282-.64-.17l-3.604 1.802-1.756-2.632c-.094-.142-.246-.226-.416-.223zm.5-5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 1c.563 0 1 .437 1 1s-.437 1-1 1-1-.437-1-1 .437-1 1-1zM6 11c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 1c.563 0 1 .437 1 1s-.437 1-1 1-1-.437-1-1 .437-1 1-1z"/>
     </svg>`;
-        this.galleryIcon2 = `
+        this.galleryIcon = `
     <svg fill="currentColor" width="32px" height="32px" viewBox="0 0 30 30"><defs id="defs2"><clipPath id="clipBack"><rect x="1" y="7" width="15" height="14" rx="2" ry="2" id="rect1"/></clipPath><clipPath id="clipFront"><rect x="9" y="8" width="19" height="19" rx="2.5" ry="2.5" id="rect2"/></clipPath></defs>
         <g transform="rotate(-12 9 14)" id="g5"><g clip-path="url(#clipBack)" id="g4"><rect x="1" y="7" width="15" height="14" fill="#BFE3F5" id="rect3"/><circle cx="12" cy="10.5" r="1.8" fill="#FFE9A8" id="circle3"/><polygon points="1,21 6,13 9,17 12,12 16,21" fill="#B8E0C4" id="polygon3" style="fill:#4cad69;fill-opacity:1;stroke:#000000;stroke-opacity:1"/><rect x="1" y="19" width="15" height="2" fill="#D9BBA0" id="rect4" style="fill:#bd885a;fill-opacity:1"/></g><rect x="1" y="7" width="15" height="14" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="1" id="rect5"/></g>
         <g transform="rotate(8 19 17)" id="g8"><g clip-path="url(#clipFront)" id="g7"><rect x="9" y="8" width="19" height="19" fill="#BFE3F5" id="rect6"/><circle cx="15.78848" cy="12.483624" r="2.4000001" fill="#FFE9A8" id="circle6" style="fill:#fff30d;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:0.375;stroke-dasharray:none"/><polygon points="9,27 15,16 19,21 23,14 28,27" fill="#B8E0C4" id="polygon6" style="fill:#71c089;fill-opacity:1;stroke:#000000;stroke-opacity:1"/><rect x="9" y="24.5" width="19" height="2.5" fill="#D9BBA0" id="rect7" style="fill:#b67b48;fill-opacity:1"/></g><rect x="9" y="8" width="19" height="19" rx="2.5" ry="2.5" fill="none" stroke="currentColor" stroke-width="1" id="rect8"/></g>
@@ -540,7 +540,7 @@ class AudioTourPlayer extends HTMLElement {
         if (stop.gallery && stop.gallery.length > 0) {
             const galleryBtn = document.createElement("button");
             galleryBtn.className = "menu-stop-btn gallery-btn";
-            galleryBtn.innerHTML = `${this.galleryIcon2}`;
+            galleryBtn.innerHTML = `${this.galleryIcon}`;
             galleryBtn.onclick = () => {
                 //this.resetAudioUI();
                 this.renderGallery(stop.gallery);
@@ -725,6 +725,11 @@ class AudioTourPlayer extends HTMLElement {
                 console.error(CONSOLE_PREFIX + "Failed to clear cache:", error);
             }
         }
+    }
+
+    renderGallery(gallery) {
+        console.log(CONSOLE_PREFIX + "Gallery rendering not implemented yet. Gallery data:", gallery);
+        return;
     }
 
     /**
