@@ -548,6 +548,16 @@ class AudioTourPlayer extends HTMLElement {
             // Use a delegate-friendly way to get the data
             const data = await this.loadJsonResource(jsonPath);
             this.tourData = data.stops;
+            let params = new URLSearchParams(document.location.search);
+            let stop = params.get("stop");
+            let detail = params.get("detail");
+            if (stop) {
+                let stopIndex = parseInt(stop);
+                if (!isNaN(stopIndex) && stopIndex >= 0 && stopIndex < this.tourData.length) {
+                    this.renderStop(stopIndex, detail ? parseInt(detail) : null);
+                    return;
+                }
+            }
             this.renderStop(0);
         } catch (error) {
             console.error(CONSOLE_PREFIX + "Error loading tour:", error);
@@ -565,13 +575,23 @@ class AudioTourPlayer extends HTMLElement {
         const s = this.shadowRoot;
         
         let stop;
-        if (detailIndex !== null) {
+        if (detailIndex !== null && this.tourData[index] && this.tourData[index].stops && this.tourData[index].stops[detailIndex]) {
             stop = this.tourData[index].stops[detailIndex];
             this.detailIndex = detailIndex;
+            window.history.pushState(
+                {index, detailIndex },
+                stop.title,
+                `?stop=${index}${detailIndex !== null && !isNaN(detailIndex) ? `&detail=${detailIndex}` : ''}`
+            );
         } else {
             stop = this.tourData[index];
             this.currentIndex = index;
             this.detailIndex = null;
+            window.history.pushState(
+                {index, detailIndex },
+                stop.title,
+                `?stop=${index}`
+            );
         }
 
         // 1. Handle the Menu Area (the dynamic buttons)
