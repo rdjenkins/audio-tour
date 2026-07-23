@@ -571,22 +571,46 @@ class AudioTourPlayer extends HTMLElement {
         const s = this.shadowRoot;
         
         let stop;
+        let params;
+        let newUrl;
+
+        // if we are viewing a detail at this stop
         if (detailIndex !== null && this.tourData[index] && this.tourData[index].stops && this.tourData[index].stops[detailIndex]) {
             stop = this.tourData[index].stops[detailIndex];
             this.detailIndex = detailIndex;
+
+            params = new URLSearchParams(window.location.search);
+            if (index > 0) {
+                params.set('stop', index);
+            } else {
+                params.delete('stop');
+            }
+            params.set('detail', detailIndex);
+
+            newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}${window.location.hash}`;
             window.history.pushState(
-                {index, detailIndex },
+                { index, detailIndex },
                 stop.title,
-                `?stop=${index}${detailIndex !== null && !isNaN(detailIndex) ? `&detail=${detailIndex}` : ''}`
+                newUrl
             );
-        } else {
+        } else { // just a main stop no detail
             stop = this.tourData[index];
             this.currentIndex = index;
             this.detailIndex = null;
+
+            params = new URLSearchParams(window.location.search);
+            if (index > 0) {
+                params.set('stop', index);
+            } else {
+                params.delete('stop');
+            }
+            params.delete('detail');
+
+            newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}${window.location.hash}`;
             window.history.pushState(
-                {index, detailIndex },
+                { index, detailIndex },
                 stop.title,
-                `?stop=${index}`
+                newUrl
             );
         }
 
