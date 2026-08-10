@@ -14,7 +14,7 @@ Whole page experience - full page portrait images (on mobiles and tablets) with 
 
 JSON-Driven Content – Tours defined in a single .json file. Support for local media or remote URLs.
 
-Additional detail at each stop - have an interesting object or extra detail at one of the stops? Add it to the tour within that stop.
+Additional detail at each stop - have an interesting object or extra detail at one of the stops? Add it to the tour within that stop as a sub-stop (with further audio), or as a gallery with one or more photos.
 
 Native Web Components – Works in React, Vue, Svelte, or a plain HTML file.
 
@@ -77,12 +77,13 @@ Note, because of the way browsers handle audio media, the filename must end with
 
 ### Create your my-tour.json
 
-The tour is controlled by a simple JSON file. An array of stops are shown in the order they appear in the file. Each one should have:
+The tour is controlled by a simple JSON file. An array of stops are shown in the order they appear in the file. Each can have:
 
  - title (this also appears on the button for this stop so keep it brief)
  - desc (a one or two sentence description of where and what the stop is)
  - image (the image shown behind the audio controls - use a portrait picture as we assume most people will view on mobile)
  - audio (an audio file)
+ - gallery (an array of photos with descriptions for additional detail)
 
 The very first 'stop' is the main menu screen so choose an image to represent the whole tour and text that invites visitors to start the tour.
 
@@ -114,7 +115,17 @@ If you are going to work cross-origin (storing media and your json file is on di
             "title": "Additional detail",
             "desc": "This is an example nested detail stop. More information on this interesting wall",
             "image": "assets/stop2-detail1.jpg",
-            "audio": "assets/audio/stop2-detail1.mp3"
+            "audio": "assets/audio/stop2-detail1.mp3",
+            "gallery": [
+              {
+                "image": "./assets/stop2-detail1-example-extra-image.jpg",
+                "caption": "Another view"
+              },
+              {
+                "image": "./assets/stop2-detail1-example-extra-image.jpg",
+                "caption": "Yet another view"
+              }
+            ]
       }
       ]
     }
@@ -154,6 +165,12 @@ document.addEventListener('DOMContentLoaded', () => {
   player.urlRewriter = capacitorUrlRewriter;
 });
 ```
+
+## FAQ
+
+### How do I hide the 'offline use' button?
+
+Where the audio-tour-player tag is defined in your HTML set offline-capable="false" and then the offline capabilities won't be displayed.
 
 ## License
 

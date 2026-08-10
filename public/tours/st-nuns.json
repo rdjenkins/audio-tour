@@ -21,7 +21,6 @@
             "audio": "audio/vestibule.mp3",
             "desc": "You are now inside St Nun's church having entered through the wood and glass vestibule.",
             "gallery": [
-                [
                     {
                         "image": "images/pilkington-window.jpg",
                         "caption": "Pilkington stained-glass window. This is a greatly extended test piece of caption text to see what the styling effects would be in the audio tour player when the gallery viewing is opened."
@@ -30,7 +29,6 @@
                         "image": "images/stnun1.jpg",
                         "caption": "Entrance to St Nun's church"
                     }
-                ]
             ],
             "stops": [
                 {
