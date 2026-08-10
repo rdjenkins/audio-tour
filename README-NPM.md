@@ -2,9 +2,11 @@
 
 This is a note to myself as I maintain the npm package audio-tour-player
 
+Commit any changes first ...
+
 ```
-npm run build
 npm version patch
+npm run build
 
 npm login
 
