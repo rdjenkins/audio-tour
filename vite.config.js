@@ -20,8 +20,19 @@ export default defineConfig(({ command }) => {
       minify: 'terser',
       terserOptions: {
         compress: {
-          drop_console: true,
-          drop_debugger: true
+          drop_console: false,
+          drop_debugger: true,
+          // Keep important console output (log/warn/error) and strip debug/info/tracing helpers.
+          pure_funcs: [
+            'console.debug',
+            'console.info',
+            'console.trace',
+            'console.table',
+            'console.group',
+            'console.groupCollapsed',
+            'console.groupEnd',
+            'console.assert'
+          ]
         }
       },
       sourcemap: true

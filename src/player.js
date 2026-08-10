@@ -1,6 +1,7 @@
 import playerStyles from "./style.css?inline";
+import { version as VERSION } from "../package.json";
 
-const CONSOLE_PREFIX = "audio-tour-player: "
+const CONSOLE_PREFIX = "audio-tour-player (v" + VERSION + "): "
 
 class AudioTourPlayer extends HTMLElement {
     constructor() {
@@ -15,10 +16,10 @@ class AudioTourPlayer extends HTMLElement {
         this.galleryData = [];   // Stores the currently loaded flattened gallery array
         this.tourPath = this.getAttribute('src') || './tours/st-nuns.json'; // provide something for developers
         this.cacheName = this.getAttribute('cache-name') || 'audio-tour-player-cache-v1';
-        console.log(CONSOLE_PREFIX + "Using cache name:", this.cacheName);
+        console.info(CONSOLE_PREFIX + "Using cache name:", this.cacheName);
         this.environment = this.getAttribute('environment') || 'browser';
         this.showOffline = (this.getAttribute('offline-capable') === 'false') ? false : true; // assume we want to show the download for offline button
-        console.log(CONSOLE_PREFIX + "Offline capable:", this.showOffline);
+        console.info(CONSOLE_PREFIX + "Offline capable:", this.showOffline);
         this.isOfflineReady = false;
         
         // storage interface
@@ -81,20 +82,20 @@ class AudioTourPlayer extends HTMLElement {
         // Standard environment of a browser accessing a website
         // where service workers will probably work
         if (this.environment === 'browser') {
-            console.log(CONSOLE_PREFIX + "Environment: browser");
-            console.log(CONSOLE_PREFIX + "Checking for Service Worker support...");
+            console.info(CONSOLE_PREFIX + "Environment: browser");
+            console.info(CONSOLE_PREFIX + "Checking for Service Worker support...");
             if ('serviceWorker' in navigator) {
-                console.log(CONSOLE_PREFIX + "Service Worker supported. Registering...");
+                console.info(CONSOLE_PREFIX + "Service Worker supported. Registering...");
                 try {
                     const params = new URLSearchParams({ cacheName: this.cacheName });
                     const registration = await navigator.serviceWorker.register(`${swPath}?${params}`, {
                         scope: './'
                     });
-                    console.log(CONSOLE_PREFIX + "Service Worker offline mode enabled.");
+                    console.info(CONSOLE_PREFIX + "Service Worker offline mode enabled.");
                     registration.update();
                     return registration;
                 } catch (error) {
-                    console.log(CONSOLE_PREFIX + "Service Worker registration failed:", error);
+                    console.info(CONSOLE_PREFIX + "Service Worker registration failed:", error);
                     const swResponse = await fetch(swPath);
                     if (!swResponse.ok) {
                         console.warn(CONSOLE_PREFIX + `Service Worker '${swPath}' not found`);
@@ -111,7 +112,7 @@ class AudioTourPlayer extends HTMLElement {
         // but for the meantime we'll assume that those using it in a capacitor app
         // will set the attribute environment="capacitor"
         if (this.environment === 'capacitor') {
-            console.log(CONSOLE_PREFIX + "Environment: capacitor - Waiting for storage provider.");
+            console.info(CONSOLE_PREFIX + "Environment: capacitor - Waiting for storage provider.");
             // We don't register a SW here; we assume the capacitor app 
             // will provide a custom this.storage implementation.
         }
@@ -146,7 +147,7 @@ class AudioTourPlayer extends HTMLElement {
                         if (!response.ok) throw new Error('Network fail');
                         await cache.put(url, response);
                     } else {
-                        console.log(CONSOLE_PREFIX + "Already in cache:", url);
+                        console.info(CONSOLE_PREFIX + "Already in cache:", url);
                     }
                     completed++;
                     var percent = Math.round((completed / urls.length) * 100);
@@ -161,10 +162,10 @@ class AudioTourPlayer extends HTMLElement {
                 caches.open(cacheName).then(cache => {
                     cache.match(url).then(found => {
                         if (!found) {
-                            console.log(CONSOLE_PREFIX + `cacheIt: ${url} not in cache, fetching and storing...`);
+                            console.info(CONSOLE_PREFIX + `cacheIt: ${url} not in cache, fetching and storing...`);
                             fetch(url).then(response => {
                                 if (!response.ok) throw new Error("Resource not found");
-                                console.log(CONSOLE_PREFIX + `cacheIt: storing ${url} to ${cacheName}`)
+                                console.info(CONSOLE_PREFIX + `cacheIt: storing ${url} to ${cacheName}`)
                                 this.storage.store(url, cacheName, response);
                             }).catch(err => {
                                 console.error(CONSOLE_PREFIX + "Failed to fetch resource for caching:", err);
@@ -176,7 +177,7 @@ class AudioTourPlayer extends HTMLElement {
             store: async (url, cacheName, response) => {
                 const cache = await caches.open(cacheName);
                 await cache.put(url, response);
-                console.log(CONSOLE_PREFIX + "stored: ", url)
+                console.info(CONSOLE_PREFIX + "stored: ", url)
             },
             clear: async (cacheName, urls) => {
                 const cache = await caches.open(cacheName);
@@ -197,10 +198,10 @@ class AudioTourPlayer extends HTMLElement {
         this.enableOffline();
 
         if (this.tourPath) {
-            console.log(CONSOLE_PREFIX + "Initializing with path:", this.tourPath);
+            console.info(CONSOLE_PREFIX + "Initializing with path:", this.tourPath);
             this.initTour(this.tourPath);
         } else {
-            console.log(CONSOLE_PREFIX + "Waiting for src attribute...");
+            console.info(CONSOLE_PREFIX + "Waiting for src attribute...");
         }
     }
 
@@ -326,7 +327,7 @@ class AudioTourPlayer extends HTMLElement {
 
         // Show loading state when audio is fetching data
         voice.addEventListener("waiting", () => {
-            console.log(CONSOLE_PREFIX + "audio buffering");
+            console.info(CONSOLE_PREFIX + "audio buffering");
             headphones.classList.add("buffering");
         });
 
@@ -533,6 +534,7 @@ class AudioTourPlayer extends HTMLElement {
     }
 
     async initTour(jsonPath) {
+        console.log(CONSOLE_PREFIX + "Loading Tour from:", jsonPath);
         this.tourData = null;
         this.currentIndex = 0;
         this.detailIndex = null;
@@ -779,7 +781,7 @@ class AudioTourPlayer extends HTMLElement {
         const isSupportedAudio = /\.(mp3|ogg|wav|m4a)$/i.test(stop.audio);
 
         if (isSupportedAudio) {
-            console.log(CONSOLE_PREFIX + "Supported audio found: ", stop.audio)
+            console.info(CONSOLE_PREFIX + "Supported audio found: ", stop.audio)
             controls.style.display = "flex";
             progressBar.style.display = "block";
             this.urlRewriter(stop.audio).then(finalAudioUrl => {
@@ -918,7 +920,7 @@ class AudioTourPlayer extends HTMLElement {
                 await this.storage.clear(this.cacheName, this.getRequiredUrls());
                 this.isOfflineReady = false;
                 this.renderStop(0);
-                console.log(CONSOLE_PREFIX + "Offline data cleared.");
+                console.info(CONSOLE_PREFIX + "Offline data cleared.");
             } catch (error) {
                 console.error(CONSOLE_PREFIX + "Failed to clear cache:", error);
             }
@@ -993,16 +995,16 @@ class AudioTourPlayer extends HTMLElement {
             const cache = await caches.open(this.cacheName);
             const cachedResponse = await cache.match(path);
             if (cachedResponse) {
-                console.log(CONSOLE_PREFIX + "Loading from Cache API:", path);
+                console.info(CONSOLE_PREFIX + "Loading from Cache API:", path);
                 return await cachedResponse.json();
             }
         }
 
         // 3. Fallback to standard fetch (which the Service Worker will intercept)
-        console.log(CONSOLE_PREFIX + "loadJsonResource() Loading via fetch:", path);
+        console.info(CONSOLE_PREFIX + "loadJsonResource() Loading via fetch:", path);
         const response = await fetch(path);
         if (!response.ok) throw new Error("Resource not found");
-        console.log(CONSOLE_PREFIX + `storing ${path} to ${this.cacheName}`)
+        console.info(CONSOLE_PREFIX + `storing ${path} to ${this.cacheName}`)
         this.storage.store(path, this.cacheName, response.clone());
         return await response.json();
     }
@@ -1044,7 +1046,7 @@ class AudioTourPlayer extends HTMLElement {
             
         // Only trigger init if the component is actually in the DOM
             if (this.isConnected) {
-                console.log(CONSOLE_PREFIX + "Source updated to:", newValue);
+                console.info(CONSOLE_PREFIX + "Source updated to:", newValue);
                 this.initTour(newValue);
             }
         }
