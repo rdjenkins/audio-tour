@@ -17,7 +17,7 @@ Whole page experience - full page portrait images (on mobiles and tablets) with 
 
 JSON-Driven Content – Tours defined in a single .json file. Support for local media or remote URLs.
 
-Additional detail at each stop - have an interesting object or extra detail at one of the stops? Add it to the tour within that stop as a sub-stop (with further audio), or as a gallery with one or more photos.
+Additional detail at each stop - have an interesting object or extra detail at one of the stops? Add it to the tour within that stop as a sub-stop (with further audio), or as a gallery with one or more photos. Gallery photos can be triggered to appear at a certain time during audio playback.
 
 Native Web Components – Works in React, Vue, Svelte, or a plain HTML file.
 
@@ -86,7 +86,7 @@ The tour is controlled by a simple JSON file. An array of stops are shown in the
  - desc (a one or two sentence description of where and what the stop is)
  - image (the image shown behind the audio controls - use a portrait picture as we assume most people will view on mobile)
  - audio (an audio file)
- - gallery (an array of photos with descriptions for additional detail)
+ - gallery (an array of photos and descriptions for additional detail). Gallery items can also optionally have a time-trigger (in seconds) for when the photo would automatically be displayed during audio playback.
 
 The very first 'stop' is the main menu screen so choose an image to represent the whole tour and text that invites visitors to start the tour.
 
@@ -122,11 +122,13 @@ If you are going to work cross-origin (storing media and your json file is on di
             "gallery": [
               {
                 "image": "./assets/stop2-detail1-example-extra-image.jpg",
-                "caption": "Another view"
+                "caption": "Another view",
+                "time-trigger": 30
               },
               {
                 "image": "./assets/stop2-detail1-example-extra-image.jpg",
-                "caption": "Yet another view"
+                "caption": "Yet another view",
+                "time-trigger": 50
               }
             ]
       }

@@ -12,7 +12,19 @@
             "title": "Front",
             "image": "images/stnun1.jpg",
             "audio": "audio/front.mp3",
-            "desc": "The entrance to St Nun's church is on Fore Street by the market cross and the town hall."
+            "desc": "The entrance to St Nun's church is on Fore Street by the market cross and the town hall.",
+            "gallery": [
+                {
+                    "image": "images/market-cross.jpg",
+                    "caption": "Market Cross.",
+                    "trigger_time": 36
+                },
+                {
+                    "image": "images/vestry.jpg",
+                    "caption": "South vestry, St Nun's church.",
+                    "trigger_time": 44
+                }
+            ]
         },
         {
             "id": "vestibule",

@@ -14,6 +14,9 @@ class AudioTourPlayer extends HTMLElement {
         this.detailIndex = null; // Tracks if we are inside a nested stop
         this.galleryIndex = 0;   // Tracks the current photo index in the overlay gallery
         this.galleryData = [];   // Stores the currently loaded flattened gallery array
+        this.activeGallery = []; // Gallery array for the stop currently on screen
+        this.timeTriggers = [];  // Gallery items with time triggers (if any)
+        this.lastFiredGalleryIndex = -1; // Index (within activeGallery) of the most recently auto-triggered photo, -1 = none yet
         this.tourPath = this.getAttribute('src') || './tours/st-nuns.json'; // provide something for developers
         this.cacheName = this.getAttribute('cache-name') || 'audio-tour-player-cache-v1';
         console.info(CONSOLE_PREFIX + "Using cache name:", this.cacheName);
@@ -290,8 +293,9 @@ class AudioTourPlayer extends HTMLElement {
             listenBtn.innerHTML = this.pauseIcon;
             headphones.classList.add("playing");
         });
-
         voice.addEventListener("timeupdate", () => {
+            this.handleGalleryTriggers(voice.currentTime);
+
             if (voice.duration) {
                 const percentage = (voice.currentTime / voice.duration) * 100;
                 progressBar.value = percentage;
@@ -316,6 +320,7 @@ class AudioTourPlayer extends HTMLElement {
         const resetUI = () => {
             listenBtn.innerHTML = this.playIcon;
             headphones.classList.remove("playing");
+            this.closeGallery();
         };
 
         voice.onended = () => {
@@ -616,6 +621,17 @@ class AudioTourPlayer extends HTMLElement {
             );
         }
 
+        // Rebuild the time-trigger list for whichever stop is now on screen, and
+        // reset trigger-firing state so triggers can fire fresh for this stop's audio.
+        this.activeGallery = stop.gallery ? stop.gallery.flat() : [];
+        this.timeTriggers = this.activeGallery
+            .map((item, idx) => ({ ...item, galleryIndex: idx }))
+            .filter(item => typeof item.trigger_time === "number")
+            .sort((a, b) => a.trigger_time - b.trigger_time);
+        this.lastFiredGalleryIndex = -1;
+
+        this.closeGallery(); // Ensure gallery is closed when changing stops
+
         // 1. Handle the Menu Area (the dynamic buttons)
         // First, find or create the menu container so we can clear it
         let menuContainer = s.getElementById("menu-container");
@@ -840,6 +856,7 @@ class AudioTourPlayer extends HTMLElement {
     changeStop(direction) {
         const s = this.shadowRoot;
         this.resetAudioUI();
+        this.closeGallery();
 
         if (direction === 'home') {
             this.renderStop(0);
@@ -925,6 +942,55 @@ class AudioTourPlayer extends HTMLElement {
                 console.error(CONSOLE_PREFIX + "Failed to clear cache:", error);
             }
         }
+    }
+
+    /**
+     * Display gallery items with time triggers if needed.
+     */
+    handleGalleryTriggers(currentTime) {
+        if (!this.timeTriggers || this.timeTriggers.length === 0) return;
+
+        let dueTrigger = null;
+        for (const trigger of this.timeTriggers) {
+            if (currentTime >= trigger.trigger_time) {
+                dueTrigger = trigger;
+            } else {
+                break;
+            }
+        }
+
+        const dueIndex = dueTrigger ? dueTrigger.galleryIndex : -1;
+
+        if (dueIndex !== this.lastFiredGalleryIndex) {
+            if (dueIndex !== -1) {
+                this.openGalleryAt(dueIndex);
+            }
+            this.lastFiredGalleryIndex = dueIndex;
+        }
+    }
+
+    /**
+     * Opens the gallery overlay at a specific time-triggered photo.
+     */
+    openGalleryAt(galleryIndex) {
+        if (!this.activeGallery || !this.activeGallery[galleryIndex]) return;
+
+        this.galleryData = this.activeGallery;
+        this.galleryIndex = galleryIndex;
+
+        const overlay = this.shadowRoot.getElementById("gallery-overlay");
+        if (overlay) {
+            overlay.classList.add("active");
+            this.updateGalleryItem();
+        }
+    }
+
+    /**
+     * Closes the gallery overlay.
+     */
+    closeGallery() {
+        const galleryOverlay = this.shadowRoot.getElementById("gallery-overlay");
+        if (galleryOverlay) galleryOverlay.classList.remove("active");
     }
 
     /**
